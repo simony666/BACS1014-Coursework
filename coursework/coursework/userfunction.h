@@ -2,4 +2,4 @@
 #include <string>
 
 //valid if user is registered user
-bool validate(std::string ic, std::string student_id);
+int uservalidate(std::string ic, std::string student_id);

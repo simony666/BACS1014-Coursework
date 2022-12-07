@@ -3,6 +3,7 @@
 #include <string>
 #include "function.h"
 #include "userfunction.h"
+#include "adminfunction.h"
 using namespace std;
 
 void displayUser() {
@@ -22,6 +23,7 @@ void displayAdmin() {
 bool login() {
 	bool isAdmin = false, isLogin = false;
 	string IC = "", std_id="", acc="", pwd="", error_text = "";
+	int valid;
 
 	while (!isLogin) {
 		system("cls");
@@ -48,6 +50,13 @@ bool login() {
 				continue;
 			}
 
+			//validate acc
+			int valid = adminvalidate(acc, "");
+			if (valid == 2) {
+				error_text = "No Such User in database";
+				continue;
+			}
+
 			//READ pwd
 			cout << "Please enter your Password: ";
 			cin >> pwd;
@@ -61,7 +70,21 @@ bool login() {
 				continue;
 			}
 
-			//TODO : validate for admin
+			//validate pwd
+			valid = adminvalidate(acc, pwd);
+			if (valid == 1) {
+				isLogin = true;
+				return true;
+			}else if (valid == 2){
+				error_text = "No Such User in database";
+			}else if (valid == 3) {
+				error_text = "Your password is Wrong!";
+			}else if (valid == 10) {
+				error_text = "Your password is error!";
+			}
+			else {
+				error_text = "Either Your Data is Wrong or Not Registered!";
+			}
 
 		}
 		else {
@@ -86,6 +109,13 @@ bool login() {
 				continue;
 			}
 
+			//validate IC
+			valid = uservalidate(IC, "");
+			if (valid == 2) {
+				error_text = "No Such User in database";
+				continue;
+			}
+
 			//READ std_id
 			cout << "Please enter your Student ID: ";
 			cin >> std_id;
@@ -100,9 +130,19 @@ bool login() {
 			}
 
 			//validate data
-			if (validate(IC, std_id)) {
+			valid = uservalidate(IC, std_id);
+			if (valid == 1) {
 				isLogin = true;
 				return true;
+			}
+			else if (valid == 2) {
+				error_text = "No Such Student in database";
+			}
+			else if (valid == 3) {
+				error_text = "Your Student ID is Wrong!";
+			}
+			else if (valid == 10) {
+				error_text = "Your Student id is Wrong!";
 			}
 			else {
 				error_text = "Either Your Data is Wrong or Not Registered!";
@@ -113,3 +153,11 @@ bool login() {
 
 	return false;
 }
+
+
+
+struct User {
+	int isAdmin = 0;
+	string name;
+	string id;
+};

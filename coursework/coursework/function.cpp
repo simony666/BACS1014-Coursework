@@ -1,10 +1,76 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <fstream>
 #include "function.h"
 #include "userfunction.h"
 #include "adminfunction.h"
+#include "Student.h"
 using namespace std;
+
+//bool getData() {
+Student getData() {
+	string line;
+	ifstream file;
+	file.open("data.txt");
+	Student user[200];
+
+	int student_index = 0;
+
+	if (file.is_open()) {
+		while (getline(file, line)) {
+			
+			int pos = 0, index = 0;
+			string line_data[6];
+
+			while (pos != -1) {
+				pos = (int)line.find("|");
+				string cut = line.substr(0, pos);
+				line_data[index] = cut;
+				index++;
+				line = line.substr(pos + 1);
+			}
+
+			user[student_index].name = line_data[0];
+			user[student_index].student_id = line_data[1];
+			user[student_index].ic = line_data[2];
+			user[student_index].year = line_data[3];
+			user[student_index].program = line_data[4];
+			user[student_index].vote = stoi(line_data[5]) == 0 ?false:true;
+			cout << user[student_index].name << ""
+				<< user[student_index].student_id << ""
+				<< user[student_index].ic << ""
+				<< user[student_index].year << ""
+				<< user[student_index].program << ""
+				<< user[student_index].vote << ""
+				<< endl;
+		}
+		file.close();
+		return Student;
+	}
+	else {
+		cout << "Unable to open file!" << endl;
+	}
+	return false;
+}
+
+bool putData(Student user) {
+	string line;
+	string delimiter = "|";
+	ofstream otfile;
+	otfile.open("data.txt", ios_base::app);
+	if (otfile.is_open()) {
+		string vote = user.vote?"1" : "0";
+		line = user.name + delimiter + user.student_id + delimiter + user.ic + delimiter + user.year + delimiter + user.program + delimiter + vote + "\n";
+		otfile << line;
+		otfile.close();
+		return true;
+	}
+	else {
+		cout << "Unable to open file!" << endl;
+	}
+	return false;
+}
 
 void displayUser() {
 	cout << "##############################################" << endl
@@ -153,11 +219,3 @@ bool login() {
 
 	return false;
 }
-
-
-
-struct User {
-	int isAdmin = 0;
-	string name;
-	string id;
-};

@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include "userfunction.h"
+#include "function.h"
+#include "Student.h"
 
 using namespace std;
 

@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="adminfunction.h" />
     <ClInclude Include="function.h" />
+    <ClInclude Include="Student.h" />
     <ClInclude Include="userfunction.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

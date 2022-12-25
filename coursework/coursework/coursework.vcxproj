@@ -19,16 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="adminfunction.cpp" />
     <ClCompile Include="function.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="userfunction.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="adminfunction.h" />
     <ClInclude Include="function.h" />
     <ClInclude Include="Student.h" />
-    <ClInclude Include="userfunction.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

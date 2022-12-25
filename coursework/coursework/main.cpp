@@ -4,19 +4,24 @@
 */
 
 #include <iostream>
-#include "userfunction.h"
-#include "function.h"
 #include "Student.h"
+#include "function.h"
 
 using namespace std;
+void user() {
+}
+void admin() {
+}
 
 int main() {
-	//Welcome Screen
+	int menu = main_menu();
+	system("cls");
+	if (menu == 1) {
+		user();
+	}
+	else if (menu == 2) {
+		admin();
+	}
 
-	//Enter Detail ( ic,student id)
-	//validation
-	cout << validate("011111", "22WMR11111") << endl;
-	cout << validate("011111", "22WMR11113") << endl;
-	cout << validate("011113", "22WMR11113") << endl;
 	return 0;
 }

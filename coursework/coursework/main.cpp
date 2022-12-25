@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Student.h"
 #include "function.h"
+#include "adminfunction.h"
 
 using namespace std;
 void user() {

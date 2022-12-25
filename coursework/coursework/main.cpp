@@ -9,6 +9,27 @@
 
 using namespace std;
 void user() {
+	bool isLogin = false;
+	string ic, student_id;
+	bool valid = true;
+	
+	do {
+		system("cls");
+		cout << "Please enter IC";
+		cin >> ic;
+		cout << "Please enter Student Id";
+		cin >> student_id;
+
+		for (int i = 0; i < ic.length(); i++) {
+			if (!isdigit(ic[i])) {
+				valid = false;
+				break;
+			}
+		}
+		if (!valid) continue;
+
+
+	} while (!isLogin);
 }
 void admin() {
 }

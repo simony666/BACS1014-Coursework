@@ -11,25 +11,39 @@ using namespace std;
 void user() {
 	bool isLogin = false;
 	string ic, student_id;
-	bool valid = true;
-	
+	string error_text;
+
 	do {
 		system("cls");
-		cout << "Please enter IC";
+		cout << "USER LEVEL" << endl;
+		if (!error_text.empty()) cout << error_text << endl;
+
+		cout << "Please enter IC: ";
 		cin >> ic;
-		cout << "Please enter Student Id";
+		cout << "Please enter Student Id: ";
 		cin >> student_id;
 
-		for (int i = 0; i < ic.length(); i++) {
-			if (!isdigit(ic[i])) {
-				valid = false;
-				break;
-			}
+		int result = validate(ic, student_id);
+		switch (result) {
+		case 1:
+			isLogin = true;
+			break;
+		case 2:
+			error_text = "IC is incorrect! Please make sure only enter numberic ic without -";
+			break;
+		case 3:
+			error_text = "Student ID is incorrect! Please make sure enter a correct format!";
+			break;
+		case 4:
+			error_text = "No Data In Database! Please contact admin if you think this is an error!";
+			break;
+		default:
+			error_text = "Unknown error occur! Please contact admin for futeru help.";
+			break;
 		}
-		if (!valid) continue;
-
-
 	} while (!isLogin);
+
+	cout << "Login SUCCESS!!!" << endl;
 }
 void admin() {
 }

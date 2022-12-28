@@ -1,4 +1,61 @@
-Show voting and winner
+//admin data create and welcome screen
+#include<iostream>
+#include<string>
+using namespace std;
+
+struct Administrator
+{
+    string name;
+    string username;
+    string password;
+};
+
+int main()
+{
+    string username;
+    string password;
+    Administrator administrators[3];
+
+    administrators[0].name = "Wang Siew You";
+    administrators[0].username = "001";
+    administrators[0].password = "0001";
+
+    administrators[1].name = "Yong Chuy Mun";
+    administrators[1].username = "002";
+    administrators[1].password = "0002";
+
+    administrators[2].name = "Eddie Chua";
+    administrators[2].username = "003";
+    administrators[2].password = "0003";
+
+    cout << "Welcome, administrator! Please enter your username and password to continue.\n";
+    cout << "Username: ";
+    cin >> username;
+    cout << "Password: ";
+    cin >> password;
+
+    if (username == administrators[0].username && password == administrators[0].password)
+    {
+        cout << "Access granted!\n";
+    }
+    else if (username == administrators[1].username && password == administrators[1].password)
+    {
+        cout << "Access granted!\n";
+    }
+    else if (username == administrators[2].username && password == administrators[2].password)
+    {
+        cout << "Access granted!\n";
+    }
+    else
+    {
+        cout << "Incorrect username or password. Access denied.\n";
+    }
+    return 0;
+}
+
+
+
+//Show voting and winner
 #include <iostream>
 #include <string>
 #include <map>

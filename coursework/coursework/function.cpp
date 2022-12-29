@@ -99,6 +99,9 @@ int validate(string ic, string student_id) {
 	if (validdb(ic,student_id)) {
 		return 1;
 	}
+	else {
+		return 4;
+	}
 	
 	return 0;
 };

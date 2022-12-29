@@ -9,4 +9,6 @@ struct Student {
 	string year;
 	string program;
 	bool vote = false;
+	string voter = 0;
+	//int votes = 0;
 };

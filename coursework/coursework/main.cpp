@@ -44,6 +44,19 @@ void user() {
 	} while (!isLogin);
 
 	cout << "Login SUCCESS!!!" << endl;
+
+	if (opennominate()) {
+		//open for nominate
+		system("cls");
+		cout << "Nonimate System" << endl;
+	}
+	else {
+		//vote
+		system("cls");
+		cout << "Vote System" << endl;
+
+	}
+
 }
 void admin() {
 }

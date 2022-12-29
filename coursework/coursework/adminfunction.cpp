@@ -20,7 +20,7 @@ int main()
     administrators[0].username = "001";
     administrators[0].password = "0001";
 
-    administrators[1].name = "Yong Chuy Mun";
+    administrators[1].name = "Yong Choy Mun";
     administrators[1].username = "002";
     administrators[1].password = "0002";
 

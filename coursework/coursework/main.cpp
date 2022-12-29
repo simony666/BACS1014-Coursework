@@ -49,7 +49,9 @@ void user() {
 	if (opennominate()) {
 		//open for nominate
 		system("cls");
+		//nominatesystem();
 		cout << "Nonimate System" << endl;
+
 	}
 	else {
 		//vote

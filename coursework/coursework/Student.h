@@ -14,5 +14,6 @@ struct Student {
 };
 
 struct Settings {
-	int count;
+	int candicate_count;
+
 };

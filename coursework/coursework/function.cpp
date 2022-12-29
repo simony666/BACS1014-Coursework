@@ -104,7 +104,9 @@ int validate(string ic, string student_id) {
 };
 
 bool opennominate() {
+	string setting[3];
 	ifstream inData;
+	Settings settings{};
 	inData.open("settings.txt");
 	if (inData) {
 		string line;
@@ -118,12 +120,35 @@ bool opennominate() {
 				string token = line.substr(0, pos);
 				data[j] = token;
 				line.erase(0, pos+1);
+				if (j == 0) {
+					//setting
+					data[j] = token;
+				}
+				else {
+					break;
+				}
 				j++;
 			}
+			if (i == 0) {
+				//setting
+				settings.candicate_count = stoi(data[0]);
+			}
+			else {
+				break;
+			}
+			//else if (i > 0 && <= 5) {
+			//	//candidate
+			//}else{
+			//	//admin login detail
+			//}
 			i++;
 		}
 	}
 	inData.close();
+
+	if (settings.candicate_count < 5) {
+		return true;
+	}
 
 	return false;
 }

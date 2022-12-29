@@ -30,6 +30,7 @@ int main_menu() {
 
 bool validdb(string ic, string student_id) {
 	ifstream inData;
+	//TODO : update max student from setting file
 	Student user[200];
 
 	inData.open("students.txt");

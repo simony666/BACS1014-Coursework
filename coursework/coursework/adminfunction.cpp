@@ -1,67 +1,11 @@
-//admin data create and welcome screen
-#include<iostream>
-#include<string>
-using namespace std;
-
-struct Administrator
-{
-    string name;
-    string username;
-    string password;
-};
-
-int main()
-{
-    string username;
-    string password;
-    Administrator administrators[3];
-
-    administrators[0].name = "Wang Siew You";
-    administrators[0].username = "001";
-    administrators[0].password = "0001";
-
-    administrators[1].name = "Yong Choy Mun";
-    administrators[1].username = "002";
-    administrators[1].password = "0002";
-
-    administrators[2].name = "Eddie Chua";
-    administrators[2].username = "003";
-    administrators[2].password = "0003";
-
-    cout << "Welcome, administrator! Please enter your username and password to continue.\n";
-    cout << "Username: ";
-    cin >> username;
-    cout << "Password: ";
-    cin >> password;
-
-    if (username == administrators[0].username && password == administrators[0].password)
-    {
-        cout << "Access granted!\n";
-    }
-    else if (username == administrators[1].username && password == administrators[1].password)
-    {
-        cout << "Access granted!\n";
-    }
-    else if (username == administrators[2].username && password == administrators[2].password)
-    {
-        cout << "Access granted!\n";
-    }
-    else
-    {
-        cout << "Incorrect username or password. Access denied.\n";
-    }
-    return 0;
-}
-
-Register student
+//Register student
 #include <iostream>
 #include <string>
-using namespace std;
-
+#include "adminfunction.h"
 using namespace std;
 
 const int MAX_STUDENTS = 100;  // Maximum number of students that can be registered
-
+/*
 struct Student {
     string name;
     string mykad;
@@ -102,35 +46,34 @@ void displayStudents() {
         cout << students[i].name << " (" << students[i].studentid << ")" << endl;
     }
 }
+*/
+int displayAdminlevel() {
+    int choice;
+    //do {
+    //    cout << "Welcome to Administrator Level" << endl;
+    //    cout << "1. Register a new student" << endl;
+    //    cout << "2. Display all registered students" << endl;
+    //    cout << "3. Quit" << endl;
+    //    cout << "Enter your choice: ";
 
-int main() {
-    while (true) {
-        cout << "Welcome to Administrator Level" << endl;
-        cout << "1. Register a new student" << endl;
-        cout << "2. Display all registered students" << endl;
-        cout << "3. Quit" << endl;
-        cout << "Enter your choice: ";
+    //    cin >> choice;
 
-        int choice;
-        cin >> choice;
-
-        if (choice == 1) {
-            registerStudent();
-        }
-        else if (choice == 2) {
-            displayStudents();
-        }
-        else if (choice == 3) {
-            break;
-        }
-        else {
-            cout << "Invalid choice. Try again." << endl;
-        }
-    }
-
+    //    if (choice == 1) {
+    //        registerStudent();
+    //    }
+    //    else if (choice == 2) {
+    //        displayStudents();
+    //    }
+    //    else if (choice == 3) {
+    //        exit;
+    //    }
+    //    else {
+    //        cout << "Invalid choice. Try again." << endl;
+    //    }
+    //} while (!(choice >= 1 && choice <= 3));
     return 0;
 }
-
+/*
 //Show voting and winner
 #include <iostream>
 #include <string>
@@ -300,3 +243,4 @@ void showVotingStats(int numVoters, int votes[][NUM_CANDIDATES])
     cout << "Number of male voters: " << numMaleVoters << endl;
     cout << "Number of female voters: " << numFemaleVoters << endl;
 }
+*/

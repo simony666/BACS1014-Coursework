@@ -62,6 +62,48 @@ void user() {
 
 }
 void admin() {
+	bool isAdminLogin = false;
+	string username;
+	string password;
+	Administrator administrators[3];
+	string error_text;
+
+	administrators[0].name = "Wang Siew You";
+	administrators[0].username = "001";
+	administrators[0].password = "0001";
+
+	administrators[1].name = "Yong Choy Mun";
+	administrators[1].username = "002";
+	administrators[1].password = "0002";
+
+	administrators[2].name = "Eddie Chua";
+	administrators[2].username = "003";
+	administrators[2].password = "0003";
+
+
+
+
+	do {
+		system("cls");
+		cout << "Welcome, administrator! Please enter your username and password to continue.\n";
+		if (!error_text.empty()) cout << error_text << endl;
+
+		cout << "Username: ";
+		cin >> username;
+		cout << "Password: ";
+		cin >> password;
+
+		for (int i = 0; i < 3; i++) {
+			if (username == administrators[i].username && password == administrators[0].password)
+			{
+				isAdminLogin = true;
+				break;
+			}
+		}
+		error_text = "Incorrect username or password. Access denied.";
+	} while (!isAdminLogin);
+	
+	displayAdminlevel();
 }
 
 int main() {

@@ -17,3 +17,10 @@ struct Settings {
 	int candicate_count;
 
 };
+
+struct Administrator
+{
+	string name;
+	string username;
+	string password;
+};

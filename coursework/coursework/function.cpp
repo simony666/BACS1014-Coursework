@@ -37,10 +37,11 @@ bool validdb(string ic, string student_id) {
 		string line;
 		int i = 0;
 		while (getline(inData, line)) {			
-			string data[7];
+			string data[8];
 			char delimiter = '|';
 
-			int j = 0, pos;
+			int j = 0;
+			size_t pos;
 			while ((pos = line.find(delimiter)) != string::npos) {
 				string token = line.substr(0, pos);
 				data[j] = token;
@@ -54,6 +55,7 @@ bool validdb(string ic, string student_id) {
 			user[i].program = data[4];
 			user[i].vote = (data[5] == "0") ? false: true;
 			user[i].voter = data[6];
+			user[i].votes = stoi(data[7]);
 			i++;
 		}
 	}
@@ -115,7 +117,7 @@ bool opennominate() {
 			while ((pos = line.find(delimiter)) != string::npos) {
 				string token = line.substr(0, pos);
 				data[j] = token;
-				line.erase(0, pos + 1);
+				line.erase(0, pos+1);
 				j++;
 			}
 			i++;

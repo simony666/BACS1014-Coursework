@@ -12,3 +12,7 @@ struct Student {
 	string voter = "0";
 	int votes = 0;
 };
+
+struct Settings {
+	int count;
+};

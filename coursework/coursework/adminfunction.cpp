@@ -5,6 +5,7 @@
 #include "adminfunction.h"
 #include "Student.h"
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 
 //const int MAX_STUDENTS = 100;  // Maximum number of students that can be registered
@@ -190,7 +191,7 @@ void registeringStudent() {
 void displayStudents() {
     fstream inData;
     Student user[200];
-    Settings settings;
+    Settings settings{};
 
     //get data from setting file and store into settings structurt
     inData.open("settings.txt");
@@ -248,48 +249,87 @@ void displayStudents() {
     }
 }
 
-
+bool sorting(Student i, Student j) { 
+    if (i.votes > j.votes) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
 
 //Show voting and winner
 void displayResult() {
+    fstream inData;
+    Student users[5];
+    Settings settings{};
+
+    //get data from setting file and store into settings structurt
+    inData.open("settings.txt");
+    if (inData) {
+        string line;
+        int i = 0;
+        string data[2];
+        while (getline(inData, line)) {
+            char delimiter = ':';
+
+            size_t pos = line.find(delimiter);
+            line.erase(0, pos + 1);
+            data[i] = line;
+            i++;
+        }
+        settings.candicate_count = stoi(data[0]);
+        settings.user_count = stoi(data[1]);
+    }
+    inData.close();
+
+    inData.open("candidate.txt");
+    if (inData) {
+        string line;
+        int i = 0;
+        while (getline(inData, line)) {
+            if (i >= settings.user_count) break;
+            string data[8];
+            char delimiter = '|';
+
+            int j = 0;
+            size_t pos;
+            while ((pos = line.find(delimiter)) != string::npos) {
+                string token = line.substr(0, pos);
+                data[j] = token;
+                line.erase(0, pos + 1);
+                j++;
+            }
+            users[i].name = data[0];
+            users[i].student_id = data[1];
+            users[i].ic = data[2];
+            users[i].year = data[3];
+            users[i].program = data[4];
+            users[i].vote = (data[5] == "0") ? false : true;
+            users[i].voter = data[6];
+            users[i].votes = stoi(data[7]);
+            i++;
+        }
+    }
+    inData.close();
+
+    sort(users, users + settings.candicate_count, sorting);
+    
+    system("cls");
     cout << "Election Results:" << endl;
-    
-    
-    
-    /*cout << "Alice: " << votes.at("Alice") << " votes" << endl;
-    cout << "Bob: " << votes.at("Bob") << " votes" << endl;
-    cout << "Charlie: " << votes.at("Charlie") << " votes" << endl;
 
-
-    if (votes.at("Alice") > votes.at("Bob") && votes.at("Alice") > votes.at("Charlie")) {
-        cout << "Winner is Alice! Has won " << votes.at("Alice") << " votes." << endl;
+    for (int i = 0; i < settings.candicate_count; i++) {
+        cout << i << " - " << users[i].name << " with total " << users[i].votes << " votes." << endl;
     }
 
-    else if (votes.at("Bob") > votes.at("Alice") && votes.at("Bob") > votes.at("Charlie")) {
-        cout << "Winner is Bob! Has won " << votes.at("Bob") << " votes." << endl;
+    if (users[0].votes > users[1].votes) {
+        cout << "The Winner Is >" << users[0].name << "< with total " << users[0].votes << " vote(s)" << endl << "Congratulations!" << endl;
     }
-
-    else if (votes.at("Charlie") > votes.at("Alice") && votes.at("Charlie") > votes.at("Bob")) {
-        cout << "Winner is Charlie! Has won " << votes.at("Charlie") << " votes." << endl;
-    }
-
-    if (votes.at("Alice") == votes.at("Bob") && votes.at("Alice") == votes.at("Charlie")) {
-        cout << "The vote was a tie." << endl;
-        cout << "Another voting session will be again by another time." << endl;
+    else if (users[0].votes == users[1].votes) {
+        cout << "The result is tie!" << endl;
+        cout << "Another voting session will be held again by another time." << endl;
         cout << "The time will determine by administrators." << endl;
     }
-
-    else if (votes.at("Bob") == votes.at("Alice") && votes.at("Bob") == votes.at("Charlie")) {
-        cout << "The vote was a tie." << endl;
-        cout << "Another voting session will be again by another time." << endl;
-        cout << "The time will determine by administrators." << endl;
-    }
-
-    else if (votes.at("Charlie") == votes.at("Alice") && votes.at("Charlie") == votes.at("Bob")) {
-        cout << "The vote was a tie." << endl;
-        cout << "Another voting session will be again by another time." << endl;
-        cout << "The time will determine by administrators." << endl;
-    }*/
 }
 
 int displayAdminlevel() {
@@ -316,9 +356,9 @@ int displayAdminlevel() {
             displayResult();
         }
         else if (choice == 4) {
-            exit;
+            break;
         }else if (choice == 5) {
-            exit;
+            break;
         }
         else {
             cout << "Invalid choice. Try again." << endl;

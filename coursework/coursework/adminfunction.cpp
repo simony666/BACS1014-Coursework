@@ -8,21 +8,68 @@
 #include <algorithm>
 using namespace std;
 
-//const int MAX_STUDENTS = 100;  // Maximum number of students that can be registered
-bool putData(Settings settings) {
+Settings getsettings() {
     fstream inData;
+    Settings settings{};
     inData.open("settings.txt");
-    string text = "Candicate Count:" + to_string(settings.candicate_count) + "\nRegistered User Count:" + to_string(settings.user_count);
-    inData << text << endl;
-    return true;
+    if (inData) {
+        string line;
+        int i = 0;
+        string data[2];
+        while (getline(inData, line)) {
+            char delimiter = ':';
+
+            size_t pos = line.find(delimiter);
+            line.erase(0, pos + 1);
+            data[i] = line;
+            i++;
+        }
+        settings.candidate_count = stoi(data[0]);
+        settings.user_count = stoi(data[1]);
+    }
+    inData.close();
+    return settings;
+
 }
 
-int registerUser(Student student) {
-    //case 1 =success, case 2 = user already in database
+Student* getcandidate(Settings settings) {
     fstream inData;
-    Student user[200];
-    Settings settings;
+    Student* candidate = new Student[5];
+    inData.open("candidate.txt");
+    if (inData) {
+        string line;
+        int i = 0;
+        while (getline(inData, line)) {
+            if (i >= settings.user_count) break;
+            string data[8];
+            char delimiter = '|';
 
+            int j = 0;
+            size_t pos;
+            while ((pos = line.find(delimiter)) != string::npos) {
+                string token = line.substr(0, pos);
+                data[j] = token;
+                line.erase(0, pos + 1);
+                j++;
+            }
+            candidate[i].name = data[0];
+            candidate[i].student_id = data[1];
+            candidate[i].ic = data[2];
+            candidate[i].year = data[3];
+            candidate[i].program = data[4];
+            candidate[i].vote = (data[5] == "0") ? false : true;
+            candidate[i].voter = data[6];
+            candidate[i].votes = stoi(data[7]);
+            i++;
+        }
+    }
+    inData.close();
+    return candidate;
+}
+
+Student* getstudent(Settings settings) {
+    fstream inData;
+    Student* user = new Student[200];
     inData.open("students.txt");
     if (inData) {
         string line;
@@ -51,6 +98,25 @@ int registerUser(Student student) {
         }
     }
     inData.close();
+    return user;
+}
+
+//const int MAX_STUDENTS = 100;  // Maximum number of students that can be registered
+bool putData(Settings settings) {
+    fstream inData;
+    inData.open("settings.txt");
+    string text = "Candidate Count:" + to_string(settings.candidate_count) + "\nRegistered User Count:" + to_string(settings.user_count);
+    inData << text << endl;
+    return true;
+}
+
+int registerUser(Student student) {
+    //case 1 =success, case 2 = user already in database
+    fstream inData;
+    Settings settings = getsettings();
+    Student* user = getstudent(settings);
+
+    
 
     for (int k = 0; k < 200; k++) {
         if (user[k].ic == student.ic || user[k].student_id == student.student_id) {
@@ -63,24 +129,7 @@ int registerUser(Student student) {
     inData << usertext << endl;
     inData.close();
 
-    inData.open("settings.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        string data[2];
-        while (getline(inData, line)) {
-            char delimiter = ':';
-
-            size_t pos = line.find(delimiter);
-            line.erase(0, pos + 1);
-            data[i] = line;
-            i++;
-        }
-        settings.candicate_count = stoi(data[0]);
-        settings.user_count = stoi(data[1])+1;
-        putData(settings);
-    }
-    inData.close();
+    putData(settings);
     return 1;
 }
 
@@ -93,28 +142,9 @@ void registeringStudent() {
     string program;
     string year;
     string error_text;
-    Settings settings{};
+    Settings settings = getsettings();
     bool registeruser = true;
 
-    //get data from setting file and store into settings structurt
-    ifstream inData;
-    inData.open("settings.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        string data[2];
-        while (getline(inData, line)) {
-            char delimiter = ':';
-
-            size_t pos = line.find(delimiter);
-            line.erase(0, pos + 1);
-            data[i] = line;
-            i++;
-        }
-        settings.candicate_count = stoi(data[0]);
-        settings.user_count = stoi(data[1]);
-    }
-    inData.close();
     
     do {
         system("cls");
@@ -190,58 +220,8 @@ void registeringStudent() {
 // Function to display a list of all registered students
 void displayStudents() {
     fstream inData;
-    Student user[200];
-    Settings settings{};
-
-    //get data from setting file and store into settings structurt
-    inData.open("settings.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        string data[2];
-        while (getline(inData, line)) {
-            char delimiter = ':';
-
-            size_t pos = line.find(delimiter);
-            line.erase(0, pos + 1);
-            data[i] = line;
-            i++;
-        }
-        settings.candicate_count = stoi(data[0]);
-        settings.user_count = stoi(data[1]);
-    }
-    inData.close();
-
-    inData.open("students.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        while (getline(inData, line)) {
-            if (i >= settings.user_count) break;
-            string data[8];
-            char delimiter = '|';
-
-            int j = 0;
-            size_t pos;
-            while ((pos = line.find(delimiter)) != string::npos) {
-                string token = line.substr(0, pos);
-                data[j] = token;
-                line.erase(0, pos + 1);
-                j++;
-            }
-            user[i].name = data[0];
-            user[i].student_id = data[1];
-            user[i].ic = data[2];
-            user[i].year = data[3];
-            user[i].program = data[4];
-            user[i].vote = (data[5] == "0") ? false : true;
-            user[i].voter = data[6];
-            user[i].votes = stoi(data[7]);
-            i++;
-        }
-    }
-    inData.close();
-
+    Settings settings = getsettings();
+    Student* user = getstudent(settings);
 
     cout << "Registered students:(Only Display First 20 Character Of Student's Name)" << endl;
     for (int i = 0; i < settings.user_count; i++) {
@@ -261,64 +241,15 @@ bool sorting(Student i, Student j) {
 //Show voting and winner
 void displayResult() {
     fstream inData;
-    Student users[5];
-    Settings settings{};
+    Settings settings = getsettings();
+    Student * users = getcandidate(settings);
 
-    //get data from setting file and store into settings structurt
-    inData.open("settings.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        string data[2];
-        while (getline(inData, line)) {
-            char delimiter = ':';
-
-            size_t pos = line.find(delimiter);
-            line.erase(0, pos + 1);
-            data[i] = line;
-            i++;
-        }
-        settings.candicate_count = stoi(data[0]);
-        settings.user_count = stoi(data[1]);
-    }
-    inData.close();
-
-    inData.open("candidate.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        while (getline(inData, line)) {
-            if (i >= settings.user_count) break;
-            string data[8];
-            char delimiter = '|';
-
-            int j = 0;
-            size_t pos;
-            while ((pos = line.find(delimiter)) != string::npos) {
-                string token = line.substr(0, pos);
-                data[j] = token;
-                line.erase(0, pos + 1);
-                j++;
-            }
-            users[i].name = data[0];
-            users[i].student_id = data[1];
-            users[i].ic = data[2];
-            users[i].year = data[3];
-            users[i].program = data[4];
-            users[i].vote = (data[5] == "0") ? false : true;
-            users[i].voter = data[6];
-            users[i].votes = stoi(data[7]);
-            i++;
-        }
-    }
-    inData.close();
-
-    sort(users, users + settings.candicate_count, sorting);
+    sort(users, users + settings.candidate_count, sorting);
     
     system("cls");
     cout << "Election Results:" << endl;
 
-    for (int i = 0; i < settings.candicate_count; i++) {
+    for (int i = 0; i < settings.candidate_count; i++) {
         cout << i << " - " << users[i].name << " with total " << users[i].votes << " votes." << endl;
     }
 
@@ -334,88 +265,9 @@ void displayResult() {
 
 void displayStatistics() {
     fstream inData;
-    Student user[200];
-    Student candidate[5];
-    Settings settings{};
-
-    //get data from setting file and store into settings structurt
-    inData.open("settings.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        string data[2];
-        while (getline(inData, line)) {
-            char delimiter = ':';
-
-            size_t pos = line.find(delimiter);
-            line.erase(0, pos + 1);
-            data[i] = line;
-            i++;
-        }
-        settings.candicate_count = stoi(data[0]);
-        settings.user_count = stoi(data[1]);
-    }
-    inData.close();
-
-    inData.open("students.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        while (getline(inData, line)) {
-            if (i >= settings.user_count) break;
-            string data[8];
-            char delimiter = '|';
-
-            int j = 0;
-            size_t pos;
-            while ((pos = line.find(delimiter)) != string::npos) {
-                string token = line.substr(0, pos);
-                data[j] = token;
-                line.erase(0, pos + 1);
-                j++;
-            }
-            user[i].name = data[0];
-            user[i].student_id = data[1];
-            user[i].ic = data[2];
-            user[i].year = data[3];
-            user[i].program = data[4];
-            user[i].vote = (data[5] == "0") ? false : true;
-            user[i].voter = data[6];
-            user[i].votes = stoi(data[7]);
-            i++;
-        }
-    }
-    inData.close();
-
-    inData.open("candidate.txt");
-    if (inData) {
-        string line;
-        int i = 0;
-        while (getline(inData, line)) {
-            if (i >= settings.user_count) break;
-            string data[8];
-            char delimiter = '|';
-
-            int j = 0;
-            size_t pos;
-            while ((pos = line.find(delimiter)) != string::npos) {
-                string token = line.substr(0, pos);
-                data[j] = token;
-                line.erase(0, pos + 1);
-                j++;
-            }
-            candidate[i].name = data[0];
-            candidate[i].student_id = data[1];
-            candidate[i].ic = data[2];
-            candidate[i].year = data[3];
-            candidate[i].program = data[4];
-            candidate[i].vote = (data[5] == "0") ? false : true;
-            candidate[i].voter = data[6];
-            candidate[i].votes = stoi(data[7]);
-            i++;
-        }
-    }
-    inData.close();
+    Settings settings = getsettings();
+    Student* candidate = getcandidate(settings);
+    Student* user = getstudent(settings);
 
     int female = 0, male=0, total[5] = { 0,0,0,0,0 }, femalevote[5] = { 0,0,0,0,0 }, malevote[5] = { 0,0,0,0,0 },tfemalevote,tmalevote,tvote,novote;
     double votepercentage;
@@ -423,7 +275,7 @@ void displayStatistics() {
     for (int i = 0; i < settings.user_count; i++) {
         string ic = user[i].ic.substr(10, 11);
         int gender = stoi(user[i].ic.substr(10, 11)) % 2;
-        for (int j = 0; j < settings.candicate_count; j++) {
+        for (int j = 0; j < settings.candidate_count; j++) {
             if (user[i].voter == candidate[j].ic) {
                 total[j]++;
                 if (gender == 0) {
@@ -454,7 +306,7 @@ void displayStatistics() {
     cout << "Percentage of students who votes\t:" << setprecision(2) << fixed << votepercentage << "%" << endl << endl;
     
     cout << "Total votes by each candidate: (Only Display First 20 Character of Candidate's Name)" << endl;
-    for (int i = 0; i < settings.candicate_count; i++) {
+    for (int i = 0; i < settings.candidate_count; i++) {
         cout << setw(20) << left << candidate[i].name.substr(0, 20) << " : " << total[i] << endl;
     }
 
@@ -498,78 +350,3 @@ int displayAdminlevel() {
     } while (!(choice >= 1 && choice <= 5));
     return 0;
 }
-/*
-
-// statistics of voting result
-#include <iostream>
-
-using namespace std;
-
-const int NUM_CANDIDATES = 3;  // Number of candidates
-
-// Function prototype
-void showVotingStats(int numVoters, int votes[][NUM_CANDIDATES]);
-
-int main()
-{
-    // Test data for the function
-    int numVoters = 10;
-    int votes[][NUM_CANDIDATES] = {
-        {1, 0, 0},  // Voter 1 votes for candidate 1
-        {1, 0, 0},  // Voter 2 votes for candidate 1
-        {0, 1, 0},  // Voter 3 votes for candidate 2
-        {0, 0, 1},  // Voter 4 votes for candidate 3
-        {0, 1, 0},  // Voter 5 votes for candidate 2
-        {1, 0, 0},  // Voter 6 votes for candidate 1
-        {0, 0, 1},  // Voter 7 votes for candidate 3
-        {0, 0, 1},  // Voter 8 votes for candidate 3
-        {0, 1, 0},  // Voter 9 votes for candidate 2
-        {1, 0, 0}   // Voter 10 votes for candidate 1
-    };
-
-    showVotingStats(numVoters, votes);
-
-    return 0;
-}
-
-// Function definition
-void showVotingStats(int numVoters, int votes[][NUM_CANDIDATES])
-{
-    int totalVotes[NUM_CANDIDATES] = {0};  // Initialize vote totals to 0
-    int numMaleVoters = 0;
-    int numFemaleVoters = 0;
-
-    // Calculate total votes for each candidate
-    for (int i = 0; i < numVoters; i++)
-    {
-        for (int j = 0; j < NUM_CANDIDATES; j++)
-        {
-            totalVotes[j] += votes[i][j];
-        }
-
-        // Check the gender of the voter based on the IC number
-        if (i % 2 == 0)  // Even numbered ICs are assumed to be male
-        {
-            numMaleVoters++;
-        }
-        else  // Odd numbered ICs are assumed to be female
-        {
-            numFemaleVoters++;
-        }
-    }
-
-    // Calculate percentage of voters who voted
-    float pctVoted = (float)numVoters / numVoters * 100;
-
-    // Print the results
-    cout << "Total number of voters: " << numVoters << endl;
-    cout << "Total number who did not vote: " << numVoters - numVoters << endl;
-    cout << "Percentage of students who voted: " << pctVoted << "%" << endl;
-    cout << "Total votes for candidate 1: " << totalVotes[0] << endl;
-    cout << "Total votes for candidate 2: " << totalVotes[1] << endl;
-    cout << "Total votes for candidate 3: " << totalVotes[2] << endl;
-    cout << "Number of male voters: " << numMaleVoters << endl;
-    cout << "Number of female voters: " << numFemaleVoters << endl;
-}
-
-*/

@@ -332,6 +332,138 @@ void displayResult() {
     }
 }
 
+void displayStatistics() {
+    fstream inData;
+    Student user[200];
+    Student candidate[5];
+    Settings settings{};
+
+    //get data from setting file and store into settings structurt
+    inData.open("settings.txt");
+    if (inData) {
+        string line;
+        int i = 0;
+        string data[2];
+        while (getline(inData, line)) {
+            char delimiter = ':';
+
+            size_t pos = line.find(delimiter);
+            line.erase(0, pos + 1);
+            data[i] = line;
+            i++;
+        }
+        settings.candicate_count = stoi(data[0]);
+        settings.user_count = stoi(data[1]);
+    }
+    inData.close();
+
+    inData.open("students.txt");
+    if (inData) {
+        string line;
+        int i = 0;
+        while (getline(inData, line)) {
+            if (i >= settings.user_count) break;
+            string data[8];
+            char delimiter = '|';
+
+            int j = 0;
+            size_t pos;
+            while ((pos = line.find(delimiter)) != string::npos) {
+                string token = line.substr(0, pos);
+                data[j] = token;
+                line.erase(0, pos + 1);
+                j++;
+            }
+            user[i].name = data[0];
+            user[i].student_id = data[1];
+            user[i].ic = data[2];
+            user[i].year = data[3];
+            user[i].program = data[4];
+            user[i].vote = (data[5] == "0") ? false : true;
+            user[i].voter = data[6];
+            user[i].votes = stoi(data[7]);
+            i++;
+        }
+    }
+    inData.close();
+
+    inData.open("candidate.txt");
+    if (inData) {
+        string line;
+        int i = 0;
+        while (getline(inData, line)) {
+            if (i >= settings.user_count) break;
+            string data[8];
+            char delimiter = '|';
+
+            int j = 0;
+            size_t pos;
+            while ((pos = line.find(delimiter)) != string::npos) {
+                string token = line.substr(0, pos);
+                data[j] = token;
+                line.erase(0, pos + 1);
+                j++;
+            }
+            candidate[i].name = data[0];
+            candidate[i].student_id = data[1];
+            candidate[i].ic = data[2];
+            candidate[i].year = data[3];
+            candidate[i].program = data[4];
+            candidate[i].vote = (data[5] == "0") ? false : true;
+            candidate[i].voter = data[6];
+            candidate[i].votes = stoi(data[7]);
+            i++;
+        }
+    }
+    inData.close();
+
+    int female = 0, male=0, total[5] = { 0,0,0,0,0 }, femalevote[5] = { 0,0,0,0,0 }, malevote[5] = { 0,0,0,0,0 },tfemalevote,tmalevote,tvote,novote;
+    double votepercentage;
+
+    for (int i = 0; i < settings.user_count; i++) {
+        string ic = user[i].ic.substr(10, 11);
+        int gender = stoi(user[i].ic.substr(10, 11)) % 2;
+        for (int j = 0; j < settings.candicate_count; j++) {
+            if (user[i].voter == candidate[j].ic) {
+                total[j]++;
+                if (gender == 0) {
+                    femalevote[j]++;
+                }
+                else {
+                    malevote[j]++;
+                }
+            }
+        }
+        if (gender == 0) {
+            female++;
+        }
+        else {
+            male++;
+        }
+    }
+
+    tvote = total[0] + total[1] + total[2] + total[3] + total[4];
+    tfemalevote = femalevote[0] + femalevote[1] + femalevote[2] + femalevote[3] + femalevote[4];
+    tmalevote = malevote[0] + malevote[1] + malevote[2] + malevote[3] + malevote[4];
+    novote = settings.user_count - tvote;
+    votepercentage = (double)tvote / settings.user_count;
+
+    system("cls");
+    cout << "Total Number of Voters\t\t\t:" << tvote << endl;
+    cout << "Total Number of Voters did not vote\t:" << novote << endl;
+    cout << "Percentage of students who votes\t:" << setprecision(2) << fixed << votepercentage << "%" << endl << endl;
+    
+    cout << "Total votes by each candidate: (Only Display First 20 Character of Candidate's Name)" << endl;
+    for (int i = 0; i < settings.candicate_count; i++) {
+        cout << setw(20) << left << candidate[i].name.substr(0, 20) << " : " << total[i] << endl;
+    }
+
+    cout << setw(20) << left << "Total Female Voters" << " : "  << tfemalevote << endl;
+    cout << setw(20) << left << "Total Male Voters" << " : "  << tmalevote << endl;
+
+
+}
+
 int displayAdminlevel() {
     int choice;
     do {
@@ -356,14 +488,14 @@ int displayAdminlevel() {
             displayResult();
         }
         else if (choice == 4) {
-            break;
+            displayStatistics();
         }else if (choice == 5) {
             break;
         }
         else {
             cout << "Invalid choice. Try again." << endl;
         }
-    } while (!(choice >= 1 && choice <= 3));
+    } while (!(choice >= 1 && choice <= 5));
     return 0;
 }
 /*
@@ -440,101 +572,4 @@ void showVotingStats(int numVoters, int votes[][NUM_CANDIDATES])
     cout << "Number of female voters: " << numFemaleVoters << endl;
 }
 
-//Show voting and winner
-#include <iostream>
-#include <string>
-#include <map>
-
-using namespace std;
-
-// Constants for the number of candidates and the number of votes
-const int NUM_CANDIDATES = 3;   //Need change to total candidates!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-const int NUM_VOTES = 9;      //Need change to total student register!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
-// Function prototypes
-void castVote(map<string, int>& votes);
-void displayResults(const map<string, int>& votes);
-
-int main() {
-    // Map to store the votes for each candidate
-    map<string, int> votes;
-
-    // Initialize the votes for each candidate
-    votes["Alice"] = 0;                              //Need change name!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    votes["Bob"] = 0;
-    votes["Charlie"] = 0;
-
-    // Cast the votes
-    for (int i = 0; i < NUM_VOTES; i++) {
-        castVote(votes);
-    }
-
-    // Display the results
-    displayResults(votes);
-
-    return 0;
-}
-
-void castVote(map<string, int>& votes) {
-    cout << "Please select a candidate to vote for:" << endl;
-    cout << "1. Alice" << endl;
-    cout << "2. Bob" << endl;
-    cout << "3. Charlie" << endl;
-
-    int selection;
-    cin >> selection;
-
-    // Increment the vote count for the selected candidate
-    switch (selection) {
-    case 1:
-        votes["Alice"]++;
-        break;
-    case 2:
-        votes["Bob"]++;
-        break;
-    case 3:
-        votes["Charlie"]++;
-        break;
-    default:
-        cout << "Invalid selection. Please try again." << endl;
-    }
-}
-
-void displayResults(const map<string, int>& votes) {
-    cout << "Election Results:" << endl;
-    cout << "Alice: " << votes.at("Alice") << " votes" << endl;
-    cout << "Bob: " << votes.at("Bob") << " votes" << endl;
-    cout << "Charlie: " << votes.at("Charlie") << " votes" << endl;
-
-
-    if (votes.at("Alice") > votes.at("Bob") && votes.at("Alice") > votes.at("Charlie")) {
-        cout << "Winner is Alice! Has won " << votes.at("Alice") << " votes." << endl;
-    }
-
-    else if (votes.at("Bob") > votes.at("Alice") && votes.at("Bob") > votes.at("Charlie")) {
-        cout << "Winner is Bob! Has won " << votes.at("Bob") << " votes." << endl;
-    }
-
-    else if (votes.at("Charlie") > votes.at("Alice") && votes.at("Charlie") > votes.at("Bob")) {
-        cout << "Winner is Charlie! Has won " << votes.at("Charlie") << " votes." << endl;
-    }
-
-    if (votes.at("Alice") == votes.at("Bob") && votes.at("Alice") == votes.at("Charlie")) {
-        cout << "The vote was a tie." << endl;
-        cout << "Another voting session will be again by another time." << endl;
-        cout << "The time will determine by administrators." << endl;
-    }
-
-    else if (votes.at("Bob") == votes.at("Alice") && votes.at("Bob") == votes.at("Charlie")) {
-        cout << "The vote was a tie." << endl;
-        cout << "Another voting session will be again by another time." << endl;
-        cout << "The time will determine by administrators." << endl;
-    }
-
-    else if (votes.at("Charlie") == votes.at("Alice") && votes.at("Charlie") == votes.at("Bob")) {
-        cout << "The vote was a tie." << endl;
-        cout << "Another voting session will be again by another time." << endl;
-        cout << "The time will determine by administrators." << endl;
-    }
-}
 */

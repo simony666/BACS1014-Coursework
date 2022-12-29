@@ -235,3 +235,74 @@ int main() {
     return 0;
 }
 
+// statistics of voting result
+#include <iostream>
+
+using namespace std;
+
+const int NUM_CANDIDATES = 3;  // Number of candidates
+
+// Function prototype
+void showVotingStats(int numVoters, int votes[][NUM_CANDIDATES]);
+
+int main()
+{
+    // Test data for the function
+    int numVoters = 10;
+    int votes[][NUM_CANDIDATES] = {
+        {1, 0, 0},  // Voter 1 votes for candidate 1
+        {1, 0, 0},  // Voter 2 votes for candidate 1
+        {0, 1, 0},  // Voter 3 votes for candidate 2
+        {0, 0, 1},  // Voter 4 votes for candidate 3
+        {0, 1, 0},  // Voter 5 votes for candidate 2
+        {1, 0, 0},  // Voter 6 votes for candidate 1
+        {0, 0, 1},  // Voter 7 votes for candidate 3
+        {0, 0, 1},  // Voter 8 votes for candidate 3
+        {0, 1, 0},  // Voter 9 votes for candidate 2
+        {1, 0, 0}   // Voter 10 votes for candidate 1
+    };
+
+    showVotingStats(numVoters, votes);
+
+    return 0;
+}
+
+// Function definition
+void showVotingStats(int numVoters, int votes[][NUM_CANDIDATES])
+{
+    int totalVotes[NUM_CANDIDATES] = {0};  // Initialize vote totals to 0
+    int numMaleVoters = 0;
+    int numFemaleVoters = 0;
+
+    // Calculate total votes for each candidate
+    for (int i = 0; i < numVoters; i++)
+    {
+        for (int j = 0; j < NUM_CANDIDATES; j++)
+        {
+            totalVotes[j] += votes[i][j];
+        }
+
+        // Check the gender of the voter based on the IC number
+        if (i % 2 == 0)  // Even numbered ICs are assumed to be male
+        {
+            numMaleVoters++;
+        }
+        else  // Odd numbered ICs are assumed to be female
+        {
+            numFemaleVoters++;
+        }
+    }
+
+    // Calculate percentage of voters who voted
+    float pctVoted = (float)numVoters / numVoters * 100;
+
+    // Print the results
+    cout << "Total number of voters: " << numVoters << endl;
+    cout << "Total number who did not vote: " << numVoters - numVoters << endl;
+    cout << "Percentage of students who voted: " << pctVoted << "%" << endl;
+    cout << "Total votes for candidate 1: " << totalVotes[0] << endl;
+    cout << "Total votes for candidate 2: " << totalVotes[1] << endl;
+    cout << "Total votes for candidate 3: " << totalVotes[2] << endl;
+    cout << "Number of male voters: " << numMaleVoters << endl;
+    cout << "Number of female voters: " << numFemaleVoters << endl;
+}

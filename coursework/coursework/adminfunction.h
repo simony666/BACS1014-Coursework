@@ -2,8 +2,8 @@
 #include "Student.h"
 
 Settings getsettings();
-Student* getcandidate(Settings settings);
-Student* getstudent(Settings settings);
+Student* getcandidate();
+Student* getstudent();
 bool putData(Settings settings);
 int registerUser(Student student);
 void registeringStudent();

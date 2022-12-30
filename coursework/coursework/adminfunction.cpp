@@ -33,7 +33,8 @@ Settings getsettings() {
 
 }
 
-Student* getcandidate(Settings settings) {
+Student* getcandidate() {
+    Settings settings = getsettings();
     fstream inData;
     Student* candidate = new Student[5];
     inData.open("candidate.txt");
@@ -68,7 +69,8 @@ Student* getcandidate(Settings settings) {
     return candidate;
 }
 
-Student* getstudent(Settings settings) {
+Student* getstudent() {
+    Settings settings = getsettings();
     fstream inData;
     Student* user = new Student[200];
     inData.open("students.txt");
@@ -142,7 +144,7 @@ int registerUser(Student student) {
     //case 1 =success, case 2 = user already in database
     fstream inData;
     Settings settings = getsettings();
-    Student* user = getstudent(settings);
+    Student* user = getstudent();
 
     int result = adminvalidate(student.ic, student.student_id);
     // return 1 = all correct, 2 = IC not correct, 3 = Student Id not correct
@@ -267,7 +269,7 @@ void registeringStudent() {
 void displayStudents() {
     fstream inData;
     Settings settings = getsettings();
-    Student* user = getstudent(settings);
+    Student* user = getstudent();
 
     cout << "Registered students:(Only Display First 20 Character Of Student's Name)" << endl;
     for (int i = 0; i < settings.user_count; i++) {
@@ -288,7 +290,7 @@ bool sorting(Student i, Student j) {
 void displayResult() {
     fstream inData;
     Settings settings = getsettings();
-    Student * users = getcandidate(settings);
+    Student * users = getcandidate();
 
     sort(users, users + settings.candidate_count, sorting);
     
@@ -312,8 +314,8 @@ void displayResult() {
 void displayStatistics() {
     fstream inData;
     Settings settings = getsettings();
-    Student* candidate = getcandidate(settings);
-    Student* user = getstudent(settings);
+    Student* candidate = getcandidate();
+    Student* user = getstudent();
 
     int female = 0, male=0, total[5] = { 0,0,0,0,0 }, femalevote[5] = { 0,0,0,0,0 }, malevote[5] = { 0,0,0,0,0 },tfemalevote,tmalevote,tvote,novote;
     double votepercentage;

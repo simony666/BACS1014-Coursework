@@ -12,6 +12,7 @@ struct Student {
 	string voter = "0";
 	int votes = 0;
 	bool nominate = false;
+	int nominater = 0;
 };
 
 struct Settings {

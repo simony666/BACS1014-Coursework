@@ -43,7 +43,7 @@ Student* getcandidate() {
         int i = 0;
         while (getline(inData, line)) {
             if (i >= settings.user_count) break;
-            string data[9];
+            string data[10];
             char delimiter = '|';
 
             int j = 0;
@@ -63,6 +63,7 @@ Student* getcandidate() {
             candidate[i].voter = data[6];
             candidate[i].votes = stoi(data[7]);
             candidate[i].nominate = (data[8] == "0") ? false : true;
+            candidate[i].nominater = stoi(data[9]);
             i++;
         }
     }
@@ -79,7 +80,7 @@ Student* getstudent() {
         string line;
         int i = 0;
         while (getline(inData, line)) {
-            string data[9];
+            string data[10];
             char delimiter = '|';
 
             int j = 0;
@@ -99,6 +100,7 @@ Student* getstudent() {
             user[i].voter = data[6];
             user[i].votes = stoi(data[7]);
             user[i].nominate = (data[8] == "0") ? false : true;
+            user[i].nominater = stoi(data[9]);
             i++;
         }
     }
@@ -166,7 +168,7 @@ int registerUser(Student student) {
         }
     }
     char delimiter = '|';
-    string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true?"1":"0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter;
+    string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter + to_string(student.nominater) + delimiter;
     inData.open("students.txt", ios::app);
     inData << usertext << endl;
     inData.close();
@@ -279,7 +281,7 @@ void displayStudents() {
     }
 }
 
-bool sorting(Student i, Student j) { 
+bool votesorting(Student i, Student j) { 
     if (i.votes > j.votes) {
         return 1;
     }
@@ -294,7 +296,7 @@ void displayResult() {
     Settings settings = getsettings();
     Student * users = getcandidate();
 
-    sort(users, users + settings.candidate_count, sorting);
+    sort(users, users + settings.candidate_count, votesorting);
     
     system("cls");
     cout << "Election Results:" << endl;

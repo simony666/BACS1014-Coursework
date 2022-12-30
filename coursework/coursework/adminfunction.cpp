@@ -6,6 +6,7 @@
 #include "Student.h"
 #include <iomanip>
 #include <algorithm>
+#include "function.h"
 using namespace std;
 
 Settings getsettings() {
@@ -110,17 +111,54 @@ bool putData(Settings settings) {
     return true;
 }
 
+int adminvalidate(string ic, string student_id) {
+    // return 1 = all correct, 2 = IC not correct, 3 = Student Id not correct
+
+    if (ic.length() != 12) return 2;
+    if (student_id.length() != 10) return 3;
+
+    for (int i = 0; i < ic.length(); i++) {
+        if (!isdigit(ic[i])) {
+            return 2;
+        }
+    }
+    for (int i = 0; i < student_id.length(); i++) {
+        if (i == 2 || i == 3 || i == 4) {
+            if (!isalpha(student_id[i])) {
+                return 3;
+            }
+        }
+        else {
+            if (!isdigit(student_id[i])) {
+                return 3;
+            }
+        }
+    }
+
+    return 1;
+};
+
 int registerUser(Student student) {
     //case 1 =success, case 2 = user already in database
     fstream inData;
     Settings settings = getsettings();
     Student* user = getstudent(settings);
 
+    int result = adminvalidate(student.ic, student.student_id);
+    // return 1 = all correct, 2 = IC not correct, 3 = Student Id not correct
+    switch (result) {
+    case 1:
+        break;
+    case 2:
+        return 2;
+    case 3:
+        return 3;
+    }
     
 
-    for (int k = 0; k < 200; k++) {
-        if (user[k].ic == student.ic || user[k].student_id == student.student_id) {
-            return 2;
+    for (int i = 0; i < 200; i++) {
+        if (user[i].ic == student.ic || user[i].student_id == student.student_id) {
+            return 4;
         }
     }
     char delimiter = '|';
@@ -129,6 +167,7 @@ int registerUser(Student student) {
     inData << usertext << endl;
     inData.close();
 
+    settings.user_count = settings.user_count + 1;
     putData(settings);
     return 1;
 }
@@ -184,6 +223,7 @@ void registeringStudent() {
         for (int i = 0; i < year.length(); i++) {
             year[i] = toupper(year[i]);
         }
+        //TODO : valid user input
 
         student.name = name;
         student.ic = ic;
@@ -200,6 +240,12 @@ void registeringStudent() {
             break;
         case 2:
             cout << "Student already in database!" << endl;
+            break;
+        case 3:
+            cout << "Student's IC is Incorrect!" << endl;
+            break;
+        case 4:
+            cout << "Student's Student ID is Incorrect!" << endl;
             break;
         default:
             cout << "Unknow error occur. Unfortunately you are admin, so please find another admin to help you!" << endl;

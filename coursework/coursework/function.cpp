@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include "Student.h"
+#include "adminfunction.h"
+#include <algorithm>
 using namespace std;
 
 int main_menu() {
@@ -28,42 +30,32 @@ int main_menu() {
 	return 0;
 }
 
-bool validdb(string ic, string student_id) {
-	ifstream inData;
-	//TODO : update max student from setting file
-	Student user[200];
+Student getuser(string ic, string student_id) {
+	Settings settings = getsettings();
+	Student* student = getstudent();
+	Student emptyuser;
+	emptyuser.ic = emptyuser.name = emptyuser.program = emptyuser.year = emptyuser.student_id = "";
+	//int count =0;
+	student_id[2] = toupper(student_id[2]);
+	student_id[3] = toupper(student_id[3]);
+	student_id[4] = toupper(student_id[4]);
 
-	inData.open("students.txt");
-	if (inData) {
-		string line;
-		int i = 0;
-		while (getline(inData, line)) {			
-			string data[8];
-			char delimiter = '|';
-
-			int j = 0;
-			size_t pos;
-			while ((pos = line.find(delimiter)) != string::npos) {
-				string token = line.substr(0, pos);
-				data[j] = token;
-				line.erase(0, pos + 1);
-				j++;
-			}
-			user[i].name = data[0];
-			user[i].student_id = data[1];
-			user[i].ic = data[2];
-			user[i].year = data[3];
-			user[i].program = data[4];
-			user[i].vote = (data[5] == "0") ? false: true;
-			user[i].voter = data[6];
-			user[i].votes = stoi(data[7]);
-			i++;
+	for (int i = 0; i < settings.user_count; i++) {
+		if (student[i].ic == ic && student[i].student_id == student_id) {
+			return student[i];
 		}
 	}
-	inData.close();
 
-	for (int k = 0; k < 200; k++) {
-		if (user[k].ic == ic && user[k].student_id == student_id) {
+	return emptyuser;
+}
+
+bool validdb(string ic, string student_id) {
+	ifstream inData;
+	Settings settings = getsettings();
+	Student* user = getstudent();
+
+	for (int i = 0; i < settings.user_count; i++) {
+		if (user[i].ic == ic && user[i].student_id == student_id) {
 			return true;
 		}
 	}
@@ -110,49 +102,143 @@ int validate(string ic, string student_id) {
 bool opennominate() {
 	string setting[3];
 	ifstream inData;
-	Settings settings{};
-	inData.open("settings.txt");
-	if (inData) {
-		string line;
-		int i = 0;
-		while (getline(inData, line)) {
-			string data[7];
-			char delimiter = '|';
+	Settings settings = getsettings();
 
-			int j = 0, pos;
-			while ((pos = line.find(delimiter)) != string::npos) {
-				string token = line.substr(0, pos);
-				data[j] = token;
-				line.erase(0, pos+1);
-				if (j == 0) {
-					//setting
-					data[j] = token;
-				}
-				else {
-					break;
-				}
-				j++;
-			}
-			if (i == 0) {
-				//setting
-				settings.candicate_count = stoi(data[0]);
-			}
-			else {
-				break;
-			}
-			//else if (i > 0 && <= 5) {
-			//	//candidate
-			//}else{
-			//	//admin login detail
-			//}
-			i++;
-		}
-	}
-	inData.close();
-
-	if (settings.candicate_count < 5) {
+	if (settings.candidate_count < 5) {
 		return true;
 	}
 
 	return false;
+}
+
+bool nominatesorting(Student i, Student j) {
+	if (i.nominater > j.nominater) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+bool updateCandidate(Student student) {
+	Settings settings = getsettings();
+	Student* user = getcandidate();
+
+	fstream inData;
+	char delimiter = '|';
+	inData.open("candidate.txt", ios::out);
+	inData << "";
+	inData.close();
+	inData.open("candidate.txt", ios::app);
+	sort(user, user + settings.candidate_count, nominatesorting);
+
+	for (int i = 0; i < settings.candidate_count; i++) {
+		string usertext;
+		if (student.ic == user[i].ic) {
+			usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter;
+		}
+		else {
+			usertext = user[i].name + delimiter + user[i].student_id + delimiter + user[i].ic + delimiter + user[i].year + delimiter + user[i].program + delimiter + (user[i].vote == true ? "1" : "0") + delimiter + user[i].voter + delimiter + to_string(user[i].votes) + delimiter + (user[i].nominate == true ? "1" : "0") + delimiter + to_string(user[i].nominater) + delimiter;
+		}
+		inData << usertext << endl;
+	}
+	inData.close();
+
+	return true;
+}
+bool updateStudent(Student student) {
+	Settings settings = getsettings();
+	Student* user = getstudent();
+
+	fstream inData;
+	char delimiter = '|';
+	inData.open("students.txt", ios::out);
+	inData << "";
+	inData.close();
+	inData.open("students.txt", ios::app);
+	for (int i = 0; i < settings.user_count; i++) {
+		string usertext;
+		if (student.ic == user[i].ic) {
+			usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter;
+		}
+		else {
+			usertext = user[i].name + delimiter + user[i].student_id + delimiter + user[i].ic + delimiter + user[i].year + delimiter + user[i].program + delimiter + (user[i].vote == true ? "1" : "0") + delimiter + user[i].voter + delimiter + to_string(user[i].votes) + delimiter + (user[i].nominate == true ? "1" : "0") + delimiter + to_string(user[i].nominater) + delimiter;
+		}
+		inData << usertext << endl;
+	}
+	inData.close();
+
+	return true;
+}
+
+int addCandidate(Student student) {
+	//case 1 =success, case 2 = user already in database
+	fstream inData;
+	Settings settings = getsettings();
+	Student* user = getcandidate();
+
+
+
+	for (int i = 0; i < 200; i++) {
+		if (user[i].ic == student.ic || user[i].student_id == student.student_id) {
+			//user already being nominate!
+			user[i].nominater++;
+			updateCandidate(user[i]);
+			return 1;
+		}
+	}
+	char delimiter = '|';
+	string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter;
+	inData.open("candidate.txt", ios::app);
+	inData << usertext << endl;
+	inData.close();
+
+	settings.candidate_count = settings.candidate_count + 1;
+	putData(settings);
+	return 1;
+}
+
+void nominatesystem(Student student) {
+	Settings settings = getsettings();
+	string error_text, nic, nstudent_id;
+	
+	do {
+		system("cls");
+		cout << "nominate System" << endl;
+		
+		if (settings.candidate_count >= 5) {
+			cout << "Some error occur! Please wait for vote start!" << endl;
+			return;
+		}
+		if (student.nominate) {
+			cout << "You Already Nominated! Please wait for vote start!" << endl;
+			return;
+		}
+
+		if (!error_text.empty()) cout << error_text << endl;
+		cout << "Please enter IC :";
+		cin >> nic;
+		cout << "Please enter Student ID :";
+		cin >> nstudent_id;
+
+		int result = adminvalidate(nic, nstudent_id);
+		// return 1 = all correct, 2 = IC not correct, 3 = Student Id not correct
+		Student candidate;
+		switch (result) {
+		case 1:
+			candidate = getuser(nic, nstudent_id);
+			addCandidate(candidate);
+			student.nominate = true;
+			updateStudent(student);
+			cout << "You had successfully nominate " << candidate.name << " in this election." << endl
+				<< "Please wait for voting period start to support your candidate!" << endl;
+			break;
+		case 2:
+			error_text = "IC is incorrect! Please check before enter!";
+			break;
+		case 3:
+			error_text = "Student ID is incorrect! Please check before enter!";
+			break;
+		}
+	} while (!student.nominate);
 }

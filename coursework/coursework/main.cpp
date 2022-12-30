@@ -13,6 +13,7 @@ void user() {
 	bool isLogin = false;
 	string ic, student_id;
 	string error_text;
+	Student user;
 
 	do {
 		system("cls");
@@ -28,6 +29,7 @@ void user() {
 		switch (result) {
 		case 1:
 			isLogin = true;
+			user = getuser(ic,student_id);
 			break;
 		case 2:
 			error_text = "IC is incorrect! Please make sure only enter numberic ic without -";
@@ -48,9 +50,7 @@ void user() {
 
 	if (opennominate()) {
 		//open for nominate
-		system("cls");
-		//nominatesystem();
-		cout << "Nonimate System" << endl;
+		nominatesystem(user);
 
 	}
 	else {

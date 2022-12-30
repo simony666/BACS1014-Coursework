@@ -43,7 +43,7 @@ Student* getcandidate() {
         int i = 0;
         while (getline(inData, line)) {
             if (i >= settings.user_count) break;
-            string data[8];
+            string data[9];
             char delimiter = '|';
 
             int j = 0;
@@ -62,6 +62,7 @@ Student* getcandidate() {
             candidate[i].vote = (data[5] == "0") ? false : true;
             candidate[i].voter = data[6];
             candidate[i].votes = stoi(data[7]);
+            candidate[i].nominate = (data[8] == "0") ? false : true;
             i++;
         }
     }
@@ -78,7 +79,7 @@ Student* getstudent() {
         string line;
         int i = 0;
         while (getline(inData, line)) {
-            string data[8];
+            string data[9];
             char delimiter = '|';
 
             int j = 0;
@@ -97,6 +98,7 @@ Student* getstudent() {
             user[i].vote = (data[5] == "0") ? false : true;
             user[i].voter = data[6];
             user[i].votes = stoi(data[7]);
+            user[i].nominate = (data[8] == "0") ? false : true;
             i++;
         }
     }
@@ -164,7 +166,7 @@ int registerUser(Student student) {
         }
     }
     char delimiter = '|';
-    string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true?"1":"0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter;
+    string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true?"1":"0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter;
     inData.open("students.txt", ios::app);
     inData << usertext << endl;
     inData.close();

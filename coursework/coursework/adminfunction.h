@@ -5,6 +5,7 @@ Settings getsettings();
 Student* getcandidate();
 Student* getstudent();
 bool putData(Settings settings);
+int adminvalidate(string ic, string student_id);
 int registerUser(Student student);
 void registeringStudent();
 void displayStudents();

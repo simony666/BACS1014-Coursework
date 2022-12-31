@@ -30,8 +30,8 @@ int main_menu() {
 			return 2;
 			done = true;
 			break;
-		}while(!done)
-	}
+		}
+	} while (!done);
 	
 }
 

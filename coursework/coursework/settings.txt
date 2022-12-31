@@ -1,2 +1,4 @@
-Candidate Count:3
-Registered User Count:200
+Candidate Count:2
+Registered User Count:11
+Nominate:1
+Vote:1

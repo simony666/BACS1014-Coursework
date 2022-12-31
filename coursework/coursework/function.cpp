@@ -4,30 +4,35 @@
 #include "Student.h"
 #include "adminfunction.h"
 #include <algorithm>
+#include <iomanip>
 using namespace std;
 
 int main_menu() {
 	int menu;
+	bool done = false;
 
-	cout << "###################################" << endl
-		<< "#              Level              #" << endl
-		<< "###################################" << endl
-		<< "1 - User Level " << endl
-		<< "2 - Admin Level " << endl
-		<< endl << "Please select one of the menu(default: 1): ";
-	cin >> menu;
+	do {
+		cout << "###################################" << endl
+			<< "#              Level              #" << endl
+			<< "###################################" << endl
+			<< "1 - User Level " << endl
+			<< "2 - Admin Level " << endl
+			<< endl << "Please select one of the menu(default: 1): ";
+		cin.ignore();
+		cin >> menu;
 
-	switch (menu) {
-	case 1:
-		return 1;
-		break;
-	case 2:
-		return 2;
-		break;
-	default:
-		return 1;
+		switch (menu) {
+		case 1:
+			return 1;
+			done = true;
+			break;
+		case 2:
+			return 2;
+			done = true;
+			break;
+		}while(!done)
 	}
-	return 0;
+	
 }
 
 Student getuser(string ic, string student_id) {
@@ -100,11 +105,18 @@ int validate(string ic, string student_id) {
 };
 
 bool opennominate() {
-	string setting[3];
-	ifstream inData;
 	Settings settings = getsettings();
 
-	if (settings.candidate_count < 5) {
+	if (settings.nominate && settings.candidate_count < 5) {
+		return true;
+	}
+
+	return false;
+}
+bool openvote() {
+	Settings settings = getsettings();
+
+	if (settings.vote) {
 		return true;
 	}
 
@@ -179,7 +191,7 @@ int addCandidate(Student student) {
 
 
 
-	for (int i = 0; i < 200; i++) {
+	for (int i = 0; i < settings.user_count; i++) {
 		if (user[i].ic == student.ic || user[i].student_id == student.student_id) {
 			//user already being nominate!
 			user[i].nominater++;
@@ -204,21 +216,26 @@ void nominatesystem(Student student) {
 	
 	do {
 		system("cls");
-		cout << "nominate System" << endl;
+		cout << "#################################" << endl
+			<< "#        Nominate System        #" << endl
+			<< "#################################" << endl
+			<< "Welcome " << student.name << " !" << endl;
 		
 		if (settings.candidate_count >= 5) {
-			cout << "Some error occur! Please wait for vote start!" << endl;
+			cout << "\nSome error occur! Please wait for vote start!" << endl;
 			return;
 		}
 		if (student.nominate) {
-			cout << "You Already Nominated! Please wait for vote start!" << endl;
+			cout << "\nYou Already Nominated! Please wait for vote start!" << endl;
 			return;
 		}
 
 		if (!error_text.empty()) cout << error_text << endl;
 		cout << "Please enter IC :";
+		cin.ignore();
 		cin >> nic;
 		cout << "Please enter Student ID :";
+		cin.ignore();
 		cin >> nstudent_id;
 
 		int result = adminvalidate(nic, nstudent_id);
@@ -227,10 +244,11 @@ void nominatesystem(Student student) {
 		switch (result) {
 		case 1:
 			candidate = getuser(nic, nstudent_id);
+			candidate.nominater++;
 			addCandidate(candidate);
 			student.nominate = true;
 			updateStudent(student);
-			cout << "You had successfully nominate " << candidate.name << " in this election." << endl
+			cout << "\nYou had successfully nominate " << candidate.name << " in this election." << endl
 				<< "Please wait for voting period start to support your candidate!" << endl;
 			break;
 		case 2:
@@ -241,4 +259,99 @@ void nominatesystem(Student student) {
 			break;
 		}
 	} while (!student.nominate);
+}
+
+Student getvote(Student* student) {
+	Settings settings = getsettings();
+	Student* user = getcandidate();
+	int vote;
+	char confirm;
+
+	do {
+		system("cls");
+		cout << "Candidate List: (Only Display First 20 Character Of Student's Name)" << endl;
+		for (int i = 0; i < settings.candidate_count; i++) {
+			cout << i + 1 << "."
+				<< setw(20) << left << user[i].name.substr(0, 20) << "(" << user[i].student_id << ")"
+				<< " - " << user[i].ic
+				<< " | " << user[i].year << " " << user[i].program
+				<< " | Nominated By " << user[i].nominater << " student"
+				<< endl;
+		}
+
+		cout << "Please vote one of the candidate above by enter the number infront of each candidate" << endl
+			<< "You may also select 6 to abstain."
+			<< endl;
+		cin.ignore();
+		cin >> vote;
+
+		system("cls");
+		cout << "######################################################################" << endl
+			<< "#                               Alert!                               #" << endl
+			<< "#   No amendment or changing of vote is allowed after vote casted!   #" << endl
+			<< "######################################################################" << endl
+			<< "You are select: " << endl;
+		
+		if (vote == 6) {
+			cout << "Abstain" << endl;
+		}else{
+			cout << setw(20) << left << user[vote - 1].name.substr(0, 20) << "(" << user[vote - 1].student_id << ")"
+				<< " - " << user[vote - 1].ic
+				<< " | " << user[vote - 1].year << " " << user[vote - 1].program << endl;
+		}
+		cout << "Are you sure to vote this candidate?(Y/N):";
+		cin.ignore();
+		cin >> confirm;
+		if (toupper(confirm) != 'Y') {
+			continue;
+		}
+
+		if (vote == 6) {
+			Student emptyuser;
+			emptyuser.ic = emptyuser.name = emptyuser.program = emptyuser.year = emptyuser.student_id = "";
+			return emptyuser;
+		}
+		(* student).vote = true;
+		(* student).voter = user[vote - 1].ic;
+		user[vote - 1].votes++;
+		return user[vote-1];
+
+	} while (toupper(confirm) != 'Y');
+	
+	Student emptyuser;
+	emptyuser.ic = emptyuser.name = emptyuser.program = emptyuser.year = emptyuser.student_id = "";
+	return emptyuser;
+}
+
+void votesystem(Student student) {
+	Settings settings = getsettings();
+	string error_text;
+	Student candidate;
+	int vote;
+
+	do {
+		system("cls");
+		cout << "#################################" << endl;
+		cout << "#          Vote System          #" << endl;
+		cout << "#################################" << endl;
+		cout << "Welcome " << student.name << " !" << endl;
+		if (!error_text.empty()) cout << error_text << endl;
+
+		if (student.vote) {
+			cout << "You Already Voted! Please wait for result!" << endl;
+			return;
+		}
+
+		Student voteresult = getvote(&student);
+		if (voteresult.name == "") {
+			updateStudent(student);
+			cout << "Successfully Abstain!";
+		}
+		else {
+			updateCandidate(voteresult);
+			updateStudent(student);
+			cout << "Successfully Vote " << voteresult.name << " !" << endl;
+		}
+
+	} while (!student.vote);
 }

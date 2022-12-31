@@ -18,6 +18,8 @@ struct Student {
 struct Settings {
 	int candidate_count;
 	int user_count;
+	bool nominate;
+	bool vote;
 
 };
 

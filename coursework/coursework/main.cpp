@@ -21,8 +21,10 @@ void user() {
 		if (!error_text.empty()) cout << error_text << endl;
 
 		cout << "Please enter IC: ";
+		cin.ignore();
 		cin >> ic;
 		cout << "Please enter Student Id: ";
+		cin.ignore();
 		cin >> student_id;
 
 		int result = validate(ic, student_id);
@@ -53,11 +55,15 @@ void user() {
 		nominatesystem(user);
 
 	}
-	else {
+	else if(openvote()) {
 		//vote
-		system("cls");
-		cout << "Vote System" << endl;
+		votesystem(user);
 
+	}
+	else {
+		cout << "#############################################" << endl
+			<< "    Please wait for Voting Session Start!    " << endl
+			<< "#############################################" << endl;
 	}
 
 }
@@ -89,12 +95,14 @@ void admin() {
 		if (!error_text.empty()) cout << error_text << endl;
 
 		cout << "Username: ";
+		cin.ignore();
 		cin >> username;
 		cout << "Password: ";
+		cin.ignore();
 		cin >> password;
 
 		for (int i = 0; i < 3; i++) {
-			if (username == administrators[i].username && password == administrators[0].password)
+			if (username == administrators[i].username && password == administrators[i].password)
 			{
 				isAdminLogin = true;
 				break;

@@ -16,7 +16,7 @@ Settings getsettings() {
     if (inData) {
         string line;
         int i = 0;
-        string data[2];
+        string data[4];
         while (getline(inData, line)) {
             char delimiter = ':';
 
@@ -27,6 +27,8 @@ Settings getsettings() {
         }
         settings.candidate_count = stoi(data[0]);
         settings.user_count = stoi(data[1]);
+        settings.nominate = (data[2]=="0")?false:true;
+        settings.vote = (data[3]=="0")?false:true;
     }
     inData.close();
     return settings;
@@ -112,7 +114,10 @@ Student* getstudent() {
 bool putData(Settings settings) {
     fstream inData;
     inData.open("settings.txt");
-    string text = "Candidate Count:" + to_string(settings.candidate_count) + "\nRegistered User Count:" + to_string(settings.user_count);
+    string text = "Candidate Count:" + to_string(settings.candidate_count) 
+        + "\nRegistered User Count:" + to_string(settings.user_count)
+        + "\nNominate:" + (settings.nominate == true ? "1" : "0")
+        + "\nVote:" + (settings.vote == true ? "1" : "0");
     inData << text << endl;
     return true;
 }
@@ -168,7 +173,7 @@ int registerUser(Student student) {
         }
     }
     char delimiter = '|';
-    string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter + to_string(student.nominater) + delimiter;
+    string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter;
     inData.open("students.txt", ios::app);
     inData << usertext << endl;
     inData.close();
@@ -261,6 +266,7 @@ void registeringStudent() {
 
         char reguser;
         cout << "Continue to register user?(Y/N) ";
+        cin.ignore();
         cin >> reguser;
         if (toupper(reguser) == 'N') {
             registeruser = false;
@@ -277,7 +283,13 @@ void displayStudents() {
 
     cout << "Registered students:(Only Display First 20 Character Of Student's Name)" << endl;
     for (int i = 0; i < settings.user_count; i++) {
-        cout << i + 1 << ".\t" << setw(20) << left << user[i].name.substr(0, 20) << "(" << user[i].student_id << ")" << " - " << user[i].ic << " | " << user[i].year << " " << user[i].program << " | Vote = " << (user[i].vote ? "TRUE" : "FALSE") << " | Vote Count : " << user[i].voter << endl;
+        cout << i + 1 << ".\t" 
+            << setw(20) << left << user[i].name.substr(0, 20) << "(" << user[i].student_id << ")" 
+            << " - " << user[i].ic 
+            << " | " << user[i].year << " " << user[i].program 
+            << " | Vote = " << (user[i].vote ? "TRUE" : "FALSE") 
+            << " | Vote Count : " << user[i].voter 
+            << endl;
     }
 }
 
@@ -368,7 +380,7 @@ void displayStatistics() {
 
 }
 
-int displayAdminlevel() {
+void displayAdminlevel() {
     int choice;
     do {
         system("cls");
@@ -380,6 +392,7 @@ int displayAdminlevel() {
         cout << "5. Quit" << endl;
         cout << "Enter your choice: ";
 
+        cin.ignore();
         cin >> choice;
 
         if (choice == 1) {
@@ -400,5 +413,4 @@ int displayAdminlevel() {
             cout << "Invalid choice. Try again." << endl;
         }
     } while (!(choice >= 1 && choice <= 5));
-    return 0;
 }

@@ -610,7 +610,7 @@ void displayAdminlevel(Administrator admin) {
             << "#################################" << endl
             << "Welcome " << admin.name << " !" << endl
             << endl
-            << "Please Select Your Action!"
+            << "Please Select Your Action!" << endl
             << "1. Register a new student" << endl
             << "2. Display all registered students" << endl
             << "3. Display result" << endl

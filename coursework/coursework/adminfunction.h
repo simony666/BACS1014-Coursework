@@ -14,4 +14,4 @@ void displayResult(bool showdetail);
 void displayStatistics();
 void systemstate();
 void resetdata();
-void displayAdminlevel();
+void displayAdminlevel(Administrator admin);

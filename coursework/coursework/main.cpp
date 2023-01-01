@@ -1,6 +1,6 @@
 /*
 * BACS1014 Assignment
-* Member : Yong Choy Mun, Wang Siew You, Eddie Chua Kok Seng
+* Member : Wang Siew You, Yong Choy Mun, Eddie Chua Kok Seng
 */
 
 #include <iostream>

@@ -138,14 +138,6 @@ bool updateCandidate(Student student) {
 	Settings settings = getsettings();
 	Student* user = getcandidate();
 
-	for (int i = 0; i < settings.candidate_count; i++) {
-		if (student.ic == user[i].ic) {
-			user[i] = student;
-			break;
-		}
-	}
-
-
 	fstream inData;
 	char delimiter = '|';
 	inData.open("candidate.txt", ios::out);

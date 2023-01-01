@@ -16,7 +16,7 @@ Settings getsettings() {
     if (inData) {
         string line;
         int i = 0;
-        string data[5];
+        string data[6];
         while (getline(inData, line)) {
             char delimiter = ':';
 
@@ -319,17 +319,17 @@ void displayResult(bool showdetail) {
     if (showdetail) {
         cout << "Votes obtain by each candidate:" << endl;
         for (int i = 0; i < settings.max_candidate; i++) {
-            cout << i+1 << " - " << users[i].name << " with total " << users[i].votes << " votes." << endl;
+            cout << i << " - " << users[i].name << " with total " << users[i].votes << " votes." << endl;
         }
     }
 
     if (users[0].votes > users[1].votes) {
-        cout << "\nThe Winner Is >" << users[0].name << "< with total " << users[0].votes << " vote(s)" << endl << "Congratulations!" << endl;
+        cout << "The Winner Is >" << users[0].name << "< with total " << users[0].votes << " vote(s)" << endl << "Congratulations!" << endl;
     }
     else if (users[0].votes == users[1].votes) {
-        cout << "\nThe result is tie! Fisrt user will be choose!" << endl
-            << "The Winner Is >" << users[0].name << "< with total " << users[0].votes << " vote(s)" << endl 
-            << "Congratulations!" << endl;
+        cout << "The result is tie!" << endl
+            << "Another voting session will be held again by another time." << endl
+            << "The time will determine by administrators." << endl;
     }
 }
 

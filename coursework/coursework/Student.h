@@ -16,6 +16,7 @@ struct Student {
 };
 
 struct Settings {
+	int max_candidate; 
 	int candidate_count;
 	int user_count;
 	bool nominate;

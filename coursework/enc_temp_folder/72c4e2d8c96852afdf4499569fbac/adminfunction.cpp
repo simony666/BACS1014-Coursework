@@ -601,16 +601,11 @@ void resetdata() {
     }
 }
 
-void displayAdminlevel(Administrator admin) {
+void displayAdminlevel() {
     int choice;
     do {
         system("cls");
-        cout << "#################################" << endl
-            << "#      Administrator Level      #" << endl
-            << "#################################" << endl
-            << "Welcome " << admin.name << " !" << endl
-            << endl
-            << "Please Select Your Action!"
+        cout << "Welcome to Administrator Level" << endl
             << "1. Register a new student" << endl
             << "2. Display all registered students" << endl
             << "3. Display result" << endl

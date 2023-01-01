@@ -239,9 +239,9 @@ void nominatesystem(Student student) {
 			cout << "\nYou Already Nominated! Please wait for vote start!" << endl;
 			return;
 		}
-
-		if (!error_text.empty()) cout << error_text << endl;
-		cout << "Please enter IC :";
+		if (!error_text.empty()) cout <<endl<< error_text << endl;
+		cout << "\nPlease nominate one candidate by entering detail below!" << endl
+			<< "Please enter IC :";
 		cin.ignore();
 		cin >> nic;
 		cout << "Please enter Student ID :";

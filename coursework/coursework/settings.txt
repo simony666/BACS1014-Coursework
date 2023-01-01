@@ -1,5 +1,5 @@
 Max candidate:5
-Candidate Count:6
-Registered User Count:11
-Nominate:0
-Vote:1
+Candidate Count:5
+Registered User Count:9
+Nominate:1
+Vote:0

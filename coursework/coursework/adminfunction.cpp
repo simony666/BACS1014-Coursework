@@ -77,7 +77,7 @@ Student* getcandidate() {
 Student* getstudent() {
     Settings settings = getsettings();
     fstream inData;
-    Student* user = new Student[200];
+    Student* user = new Student[settings.user_count];
     inData.open("students.txt");
     if (inData) {
         string line;
@@ -491,7 +491,7 @@ void resetdata() {
             inData.open("candidate.txt", ios::out);
             inData << "";
             inData.close();
-            inData.open("student.txt", ios::out);
+            inData.open("students.txt", ios::out);
             inData << "";
             inData.close();
             settings.candidate_count = 0;

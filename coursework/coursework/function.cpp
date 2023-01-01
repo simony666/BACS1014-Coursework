@@ -56,7 +56,6 @@ Student getuser(string ic, string student_id) {
 }
 
 bool validdb(string ic, string student_id) {
-	ifstream inData;
 	Settings settings = getsettings();
 	Student* user = getstudent();
 
@@ -209,10 +208,6 @@ void addCandidate(Student student) {
 			return;
 		}
 	}
-
-	//if (settings.candidate_count >= 5) {
-	//	return;
-	//}
 
 	char delimiter = '|';
 	string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter;

@@ -17,7 +17,9 @@ void user() {
 
 	do {
 		system("cls");
-		cout << "USER LEVEL" << endl;
+		cout << "##################################" << endl;
+		cout << "#           USER LEVEL           #" << endl;
+		cout << "##################################" << endl;
 		if (!error_text.empty()) cout << error_text << endl;
 
 		cout << "Please enter IC: ";
@@ -61,9 +63,7 @@ void user() {
 
 	}
 	else {
-		cout << "#############################################" << endl
-			<< "    Please wait for Voting Session Start!    " << endl
-			<< "#############################################" << endl;
+		displayResult(false);
 	}
 
 }
@@ -115,14 +115,20 @@ void admin() {
 }
 
 int main() {
-	int menu = main_menu();
-	system("cls");
-	if (menu == 1) {
-		user();
-	}
-	else if (menu == 2) {
-		admin();
-	}
 
+	//continue loop until close the window
+	do
+	{
+		int menu = main_menu();
+		system("cls");
+		if (menu == 1) {
+			user();
+		}
+		else if (menu == 2) {
+			admin();
+		}
+		cout << '\n' << "Press enter to continue.....";
+		cin.ignore();
+	} while (cin.get() == '\n');
 	return 0;
 }

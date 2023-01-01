@@ -12,14 +12,15 @@ int main_menu() {
 	bool done = false;
 
 	do {
+		system("cls");
 		cout << "###################################" << endl
 			<< "#              Level              #" << endl
 			<< "###################################" << endl
 			<< "1 - User Level " << endl
 			<< "2 - Admin Level " << endl
-			<< endl << "Please select one of the menu(default: 1): ";
-		cin.ignore();
+			<< endl << "Please select one of the menu: ";
 		cin >> menu;
+		cout << menu;
 
 		switch (menu) {
 		case 1:
@@ -102,17 +103,18 @@ int validate(string ic, string student_id) {
 	}
 	
 	return 0;
-};
+}
 
 bool opennominate() {
 	Settings settings = getsettings();
 
-	if (settings.nominate && settings.candidate_count < 5) {
+	if (settings.nominate) {
 		return true;
 	}
 
 	return false;
 }
+
 bool openvote() {
 	Settings settings = getsettings();
 
@@ -183,22 +185,25 @@ bool updateStudent(Student student) {
 	return true;
 }
 
-int addCandidate(Student student) {
+void addCandidate(Student student) {
 	//case 1 =success, case 2 = user already in database
 	fstream inData;
 	Settings settings = getsettings();
 	Student* user = getcandidate();
-
-
 
 	for (int i = 0; i < settings.user_count; i++) {
 		if (user[i].ic == student.ic || user[i].student_id == student.student_id) {
 			//user already being nominate!
 			user[i].nominater++;
 			updateCandidate(user[i]);
-			return 1;
+			return;
 		}
 	}
+
+	if (settings.candidate_count >= 5) {
+		return;
+	}
+
 	char delimiter = '|';
 	string usertext = student.name + delimiter + student.student_id + delimiter + student.ic + delimiter + student.year + delimiter + student.program + delimiter + (student.vote == true ? "1" : "0") + delimiter + student.voter + delimiter + to_string(student.votes) + delimiter + (student.nominate == true ? "1" : "0") + delimiter + to_string(student.nominater) + delimiter;
 	inData.open("candidate.txt", ios::app);
@@ -207,7 +212,6 @@ int addCandidate(Student student) {
 
 	settings.candidate_count = settings.candidate_count + 1;
 	putData(settings);
-	return 1;
 }
 
 void nominatesystem(Student student) {
@@ -220,11 +224,7 @@ void nominatesystem(Student student) {
 			<< "#        Nominate System        #" << endl
 			<< "#################################" << endl
 			<< "Welcome " << student.name << " !" << endl;
-		
-		if (settings.candidate_count >= 5) {
-			cout << "\nSome error occur! Please wait for vote start!" << endl;
-			return;
-		}
+
 		if (student.nominate) {
 			cout << "\nYou Already Nominated! Please wait for vote start!" << endl;
 			return;
@@ -269,7 +269,19 @@ Student getvote(Student* student) {
 
 	do {
 		system("cls");
-		cout << "Candidate List: (Only Display First 20 Character Of Student's Name)" << endl;
+		system("cls");
+		cout << "#################################" << endl;
+		cout << "#          Vote System          #" << endl;
+		cout << "#################################" << endl;
+		cout << "Welcome " << (* student).name << " !" << endl;
+
+		if ((*student).vote) {
+			cout << "You Already Voted! Please wait for result!" << endl;
+			confirm = 'y';
+			break;
+		}
+
+		cout << "\nCandidate List: (Only Display First 20 Character Of Student's Name)" << endl;
 		for (int i = 0; i < settings.candidate_count; i++) {
 			cout << i + 1 << "."
 				<< setw(20) << left << user[i].name.substr(0, 20) << "(" << user[i].student_id << ")"
@@ -279,9 +291,10 @@ Student getvote(Student* student) {
 				<< endl;
 		}
 
-		cout << "Please vote one of the candidate above by enter the number infront of each candidate" << endl
-			<< "You may also select 6 to abstain."
-			<< endl;
+		cout << "6. Abstain" << endl
+			<< "\nPlease vote one of the candidate above by enter the number infront of each candidate" << endl
+			<< "You may also select 6 to abstain."<< endl
+			<< "\nYou are vote: ";
 		cin.ignore();
 		cin >> vote;
 
@@ -305,13 +318,12 @@ Student getvote(Student* student) {
 		if (toupper(confirm) != 'Y') {
 			continue;
 		}
-
+		(*student).vote = true;
 		if (vote == 6) {
 			Student emptyuser;
-			emptyuser.ic = emptyuser.name = emptyuser.program = emptyuser.year = emptyuser.student_id = "";
+			emptyuser.ic = emptyuser.name = emptyuser.program = emptyuser.year = emptyuser.student_id = "6";
 			return emptyuser;
 		}
-		(* student).vote = true;
 		(* student).voter = user[vote - 1].ic;
 		user[vote - 1].votes++;
 		return user[vote-1];
@@ -327,25 +339,14 @@ void votesystem(Student student) {
 	Settings settings = getsettings();
 	string error_text;
 	Student candidate;
-	int vote;
 
 	do {
-		system("cls");
-		cout << "#################################" << endl;
-		cout << "#          Vote System          #" << endl;
-		cout << "#################################" << endl;
-		cout << "Welcome " << student.name << " !" << endl;
-		if (!error_text.empty()) cout << error_text << endl;
-
-		if (student.vote) {
-			cout << "You Already Voted! Please wait for result!" << endl;
-			return;
-		}
-
 		Student voteresult = getvote(&student);
 		if (voteresult.name == "") {
+			break;
+		}else if (voteresult.name == "6") {
 			updateStudent(student);
-			cout << "Successfully Abstain!";
+			cout << "Successfully Abstain!" << endl;
 		}
 		else {
 			updateCandidate(voteresult);

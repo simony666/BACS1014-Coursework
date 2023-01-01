@@ -147,7 +147,7 @@ int adminvalidate(string ic, string student_id) {
     }
 
     return 1;
-};
+}
 
 int registerUser(Student student) {
     //case 1 =success, case 2 = user already in database
@@ -303,50 +303,66 @@ bool votesorting(Student i, Student j) {
 }
 
 //Show voting and winner
-void displayResult() {
-    fstream inData;
+void displayResult(bool showdetail) {
     Settings settings = getsettings();
     Student * users = getcandidate();
 
     sort(users, users + settings.candidate_count, votesorting);
     
     system("cls");
-    cout << "Election Results:" << endl;
+    cout << "##################################" << endl;
+    cout << "#        Election Results        #" << endl;
+    cout << "##################################" << endl;
 
-    for (int i = 0; i < settings.candidate_count; i++) {
-        cout << i << " - " << users[i].name << " with total " << users[i].votes << " votes." << endl;
+    if (showdetail) {
+        cout << "Votes obtain by each candidate:" << endl;
+        for (int i = 0; i < settings.candidate_count; i++) {
+            cout << i << " - " << users[i].name << " with total " << users[i].votes << " votes." << endl;
+        }
     }
 
     if (users[0].votes > users[1].votes) {
         cout << "The Winner Is >" << users[0].name << "< with total " << users[0].votes << " vote(s)" << endl << "Congratulations!" << endl;
     }
     else if (users[0].votes == users[1].votes) {
-        cout << "The result is tie!" << endl;
-        cout << "Another voting session will be held again by another time." << endl;
-        cout << "The time will determine by administrators." << endl;
+        cout << "The result is tie!" << endl
+            << "Another voting session will be held again by another time." << endl
+            << "The time will determine by administrators." << endl;
     }
 }
 
 void displayStatistics() {
-    fstream inData;
     Settings settings = getsettings();
     Student* candidate = getcandidate();
     Student* user = getstudent();
 
-    int female = 0, male=0, total[5] = { 0,0,0,0,0 }, femalevote[5] = { 0,0,0,0,0 }, malevote[5] = { 0,0,0,0,0 },tfemalevote,tmalevote,tvote,novote;
+    int female = 0, male=0, total[6] = { 0 }, femalevote[6] = { 0 }, malevote[6] = { 0 },tfemalevote,tmalevote,tvote,novote;
     double votepercentage;
 
     for (int i = 0; i < settings.user_count; i++) {
         string ic = user[i].ic.substr(10, 11);
         int gender = stoi(user[i].ic.substr(10, 11)) % 2;
-        for (int j = 0; j < settings.candidate_count; j++) {
-            if (user[i].voter == candidate[j].ic) {
-                total[j]++;
+        if (user[i].vote) {
+            if (user[i].voter == "0") {
+                total[5]++;
                 if (gender == 0) {
-                    femalevote[j]++;
+                    femalevote[5]++;
                 }
                 else {
-                    malevote[j]++;
+                    malevote[5]++;
+                }
+            }
+            else {
+                for (int j = 0; j < settings.candidate_count; j++) {
+                    if (user[i].voter == candidate[j].ic) {
+                        total[j]++;
+                        if (gender == 0) {
+                            femalevote[j]++;
+                        }
+                        else {
+                            malevote[j]++;
+                        }
+                    }
                 }
             }
         }
@@ -358,39 +374,246 @@ void displayStatistics() {
         }
     }
 
-    tvote = total[0] + total[1] + total[2] + total[3] + total[4];
-    tfemalevote = femalevote[0] + femalevote[1] + femalevote[2] + femalevote[3] + femalevote[4];
-    tmalevote = malevote[0] + malevote[1] + malevote[2] + malevote[3] + malevote[4];
+    tvote = total[0] + total[1] + total[2] + total[3] + total[4] + total[5];
+    tfemalevote = femalevote[0] + femalevote[1] + femalevote[2] + femalevote[3] + femalevote[4] + femalevote[5];
+    tmalevote = malevote[0] + malevote[1] + malevote[2] + malevote[3] + malevote[4] + malevote[5];
     novote = settings.user_count - tvote;
     votepercentage = (double)tvote / settings.user_count;
 
     system("cls");
-    cout << "Total Number of Voters\t\t\t:" << tvote << endl;
-    cout << "Total Number of Voters did not vote\t:" << novote << endl;
-    cout << "Percentage of students who votes\t:" << setprecision(2) << fixed << votepercentage << "%" << endl << endl;
+    cout << "Total Number of Voters\t\t\t:" << tvote << endl
+        << "Total Number of Voters did not vote\t:" << novote << endl
+        << "Total Number of Voters abstain\t\t:" << total[5] << endl
+        << "Percentage of students who votes\t:" << setprecision(2) << fixed << votepercentage*100 << "%" << endl << endl;
     
     cout << "Total votes by each candidate: (Only Display First 20 Character of Candidate's Name)" << endl;
     for (int i = 0; i < settings.candidate_count; i++) {
         cout << setw(20) << left << candidate[i].name.substr(0, 20) << " : " << total[i] << endl;
     }
+    cout << setw(20) << left << "Abstain" << " : " << total[5] << endl;
 
-    cout << setw(20) << left << "Total Female Voters" << " : "  << tfemalevote << endl;
-    cout << setw(20) << left << "Total Male Voters" << " : "  << tmalevote << endl;
+    cout << endl << setw(20) << left << "Total Female Voters" << " : "  << tfemalevote << endl
+        << setw(20) << left << "Total Male Voters" << " : "  << tmalevote << endl;
 
 
+}
+void systemstate() {
+    Settings settings = getsettings();
+    char confirm;
+
+    do {
+        system("cls");
+        cout << "################################" << endl
+            << "#         System State         #" << endl
+            << "################################" << endl;
+
+        cout << "Current Satate:" << endl
+            << "Nominating: " << (settings.nominate ? "Open" : "Close") << endl
+            << "Voting: " << (settings.vote ? "Open" : "Close") << endl
+            << endl;
+        cout << "Do you want to switch Nominating State to <" << (settings.nominate ? "Close" : "Open") << "> ?" << endl
+            << "Are you want to swith?(Y/N): ";
+        cin >> confirm;
+        if (toupper(confirm) == 'Y') {
+            settings.nominate = settings.nominate ? false : true;
+            putData(settings);
+            cout << "State Change!" << endl;
+        }
+        else if (toupper(confirm) == 'N') {
+            cout << "State Remain!" << endl;
+        }
+        else {
+            continue;
+        }
+        cout << "\nDo you want to switch Voting State to <" << (settings.vote ? "Close" : "Open") << "> ?" << endl;
+        cin >> confirm;
+        if (toupper(confirm) == 'Y') {
+            settings.vote = settings.vote ? false : true;
+            putData(settings);
+            cout << "State Change!" << endl;
+        }
+        else if (toupper(confirm) == 'N') {
+            cout << "State Remain!" << endl;
+        }
+    } while (!(toupper(confirm) == 'N'|| toupper(confirm) == 'Y'));
+    cout << "\nCurrent Satate:" << endl
+        << "Nominating: " << (settings.nominate ? "Open" : "Close") << endl
+        << "Voting: " << (settings.vote ? "Open" : "Close") << endl;
+}
+
+void resetdata() {
+    Settings settings = getsettings();
+    char confirm, selection,doubleconfirm;
+
+    system("cls");
+    cout << "##################################" << endl
+        << "#           Reset Data           #" << endl
+        << "##################################" << endl
+        << "Alert! Please make sure are you really want to do so before continue!" << endl
+        << "This will erase all data can cannot be redone!" << endl
+        << "Are you sure to continue?(Y/N)" << endl;
+
+    cin >> confirm;
+
+    if (toupper(confirm) != 'Y') {
+        return;
+    }
+    system("cls");
+    cout << "##################################" << endl
+        << "#           Reset Data           #" << endl
+        << "##################################" << endl
+        << "Please select one from below:" << endl
+        << "1. Reset All Data (This will DELETE all data include all registered Student!)" << endl
+        << "2. Reset Data (This will remove all candidate data and reset student's data)" << endl
+        << "3. Reset Vote (This only reset each student's data without removing candidate)" << endl
+        << "4. Cancel" << endl
+        << "Your selection: ";
+    cin >> selection;
+
+    switch (selection)
+    {
+    case '1':
+        system("cls");
+        cout << "##################################" << endl
+            << "#           Reset Data           #" << endl
+            << "##################################" << endl
+            << "Are you sure to Reset All Data? This action cannot be undone!" << endl
+            << "Below data will be change one confirmed:" << endl
+            << "All Student Data Deleted" << endl
+            << "All Candidate Data Deleted" << endl
+            << "\nAre you sure want to continue?(Y/N)" << endl;
+        cin >> doubleconfirm;
+
+        if (toupper(doubleconfirm) == 'Y') {
+            fstream inData;
+            inData.open("candidate.txt", ios::out);
+            inData << "";
+            inData.close();
+            inData.open("student.txt", ios::out);
+            inData << "";
+            inData.close();
+            settings.candidate_count = 0;
+            settings.user_count = 0;
+            settings.nominate = true;
+            settings.vote = false;
+            putData(settings);
+            cout << "Successfully Reset All Data!" << endl;
+        }
+        else {
+            cout << "Action Cancelled" << endl;
+            return;
+        }
+        //reset all data
+        break;
+    case '2':
+        system("cls");
+        cout << "##################################" << endl
+            << "#           Reset Data           #" << endl
+            << "##################################" << endl
+            << "Are you sure to Reset Data? This action cannot be undone!" << endl
+            << "Below data will be change one confirmed:" << endl
+            << "All Candidate Data Deleted" << endl
+            << "All Student Data Reset to Default Condition" << endl
+            << "\nAre you sure want to continue?(Y/N)" << endl;
+        cin >> doubleconfirm;
+
+        if (toupper(doubleconfirm) == 'Y') {
+            Student* user = getstudent();
+            fstream inData;
+            char delimiter = '|';
+            
+            //Delete Candidate Data
+            inData.open("candidate.txt", ios::out);
+            inData << "";
+            inData.close();
+            
+            //Reset Student Data
+            inData.open("students.txt", ios::out);
+            inData << "";
+            inData.close();
+            inData.open("students.txt", ios::app);
+            for (int i = 0; i < settings.user_count; i++) {
+                string usertext;
+                usertext = user[i].name + delimiter + user[i].student_id + delimiter + user[i].ic + delimiter + user[i].year + delimiter + user[i].program + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter;
+                inData << usertext << endl;
+            }
+            inData.close();
+
+            settings.candidate_count = 0;
+            putData(settings);
+            cout << "Successfully Reset Data!" << endl;
+        }
+        else {
+            cout << "Action Cancelled" << endl;
+            return;
+        }
+        break;
+    case '3':
+        system("cls");
+        cout << "##################################" << endl
+            << "#           Reset Data           #" << endl
+            << "##################################" << endl
+            << "Are you sure to Reset Vote? This action cannot be undone!" << endl
+            << "Below data will be change one confirmed:" << endl
+            << "All Candidate Data Reset to Default Condition" << endl
+            << "All Student Data Reset to Default Condition" << endl
+            << "\nAre you sure want to continue?(Y/N)" << endl;
+        cin >> doubleconfirm;
+
+        if (toupper(doubleconfirm) == 'Y') {
+            Student* candidate = getcandidate();
+            Student* user = getstudent();
+            fstream inData;
+            char delimiter = '|';
+
+            //Reset Candidate Data
+            inData.open("candidate.txt", ios::out);
+            inData << "";
+            inData.close();
+            inData.open("candidate.txt", ios::app);
+            for (int i = 0; i < settings.candidate_count; i++) {
+                string usertext;
+                usertext = candidate[i].name + delimiter + candidate[i].student_id + delimiter + candidate[i].ic + delimiter + candidate[i].year + delimiter + candidate[i].program + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "1" + delimiter;
+                inData << usertext << endl;
+            }
+            inData.close();
+
+            //Reset Student Data
+            inData.open("students.txt", ios::out);
+            inData << "";
+            inData.close();
+            inData.open("students.txt", ios::app);
+            for (int i = 0; i < settings.user_count; i++) {
+                string usertext;
+                usertext = user[i].name + delimiter + user[i].student_id + delimiter + user[i].ic + delimiter + user[i].year + delimiter + user[i].program + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter;
+                inData << usertext << endl;
+            }
+            inData.close();
+            cout << "Successfully Reset Vote!" << endl;
+        }
+        else {
+            cout << "Action Cancelled" << endl;
+            return;
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 void displayAdminlevel() {
     int choice;
     do {
         system("cls");
-        cout << "Welcome to Administrator Level" << endl;
-        cout << "1. Register a new student" << endl;
-        cout << "2. Display all registered students" << endl;
-        cout << "3. Display result" << endl;
-        cout << "4. Statistics" << endl;
-        cout << "5. Quit" << endl;
-        cout << "Enter your choice: ";
+        cout << "Welcome to Administrator Level" << endl
+            << "1. Register a new student" << endl
+            << "2. Display all registered students" << endl
+            << "3. Display result" << endl
+            << "4. Statistics" << endl
+            << "5. System State" << endl
+            << "6. Reset Data" << endl
+            << "7. Quit" << endl
+            << "Enter your choice: ";
 
         cin.ignore();
         cin >> choice;
@@ -402,15 +625,22 @@ void displayAdminlevel() {
             displayStudents();
         }
         else if (choice == 3) {
-            displayResult();
+            displayResult(true);
         }
         else if (choice == 4) {
             displayStatistics();
         }else if (choice == 5) {
+            systemstate();
+        }
+        else if (choice == 6) {
+            resetdata();
+        }
+        else if (choice == 7) {
             break;
         }
+
         else {
             cout << "Invalid choice. Try again." << endl;
         }
-    } while (!(choice >= 1 && choice <= 5));
+    } while (!(choice >= 1 && choice <= 7));
 }

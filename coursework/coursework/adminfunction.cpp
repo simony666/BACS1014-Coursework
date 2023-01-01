@@ -215,7 +215,7 @@ void registeringStudent() {
         cout << "Enter student ID: ";
         getline(cin, student_id); 
         
-        cout << "Enter MyKad Number: ";
+        cout << "Enter IC Number: ";
         getline(cin, ic);
 
         cout << "Enter Year: ";
@@ -268,7 +268,6 @@ void registeringStudent() {
 
         char reguser;
         cout << "Continue to register user?(Y/N) ";
-        cin.ignore();
         cin >> reguser;
         if (toupper(reguser) == 'N') {
             registeruser = false;
@@ -409,7 +408,7 @@ void systemstate() {
             << "#         System State         #" << endl
             << "################################" << endl;
 
-        cout << "Current Satate:" << endl
+        cout << "Current State:" << endl
             << "Nominating: " << (settings.nominate ? "Open" : "Close") << endl
             << "Voting: " << (settings.vote ? "Open" : "Close") << endl
             << endl;
@@ -427,7 +426,8 @@ void systemstate() {
         else {
             continue;
         }
-        cout << "\nDo you want to switch Voting State to <" << (settings.vote ? "Close" : "Open") << "> ?" << endl;
+        cout << "\nDo you want to switch Voting State to <" << (settings.vote ? "Close" : "Open") << "> ?" << endl
+            << "Are you want to swith?(Y/N): ";
         cin >> confirm;
         if (toupper(confirm) == 'Y') {
             settings.vote = settings.vote ? false : true;

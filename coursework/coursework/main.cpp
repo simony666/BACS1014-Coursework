@@ -76,19 +76,16 @@ void admin() {
 	string error_text;
 
 	administrators[0].name = "Wang Siew You";
-	administrators[0].username = "001";
-	administrators[0].password = "0001";
+	administrators[0].username = "SiewYou";
+	administrators[0].password = "electivesystem1";
 
 	administrators[1].name = "Yong Choy Mun";
-	administrators[1].username = "002";
-	administrators[1].password = "0002";
+	administrators[1].username = "ChoyMun";
+	administrators[1].password = "electivesystem2";
 
 	administrators[2].name = "Eddie Chua";
-	administrators[2].username = "003";
-	administrators[2].password = "0003";
-
-
-
+	administrators[2].username = "Eddie";
+	administrators[2].password = "electivesystem3";
 
 	do {
 		system("cls");

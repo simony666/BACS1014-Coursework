@@ -39,7 +39,7 @@ Settings getsettings() {
 Student* getcandidate() {
     Settings settings = getsettings();
     fstream inData;
-    Student* candidate = new Student[settings.user_count];
+    Student* candidate = new Student[settings.candidate_count];
     inData.open("candidate.txt");
     if (inData) {
         string line;
